@@ -19,7 +19,7 @@ def send():
         print(request.json)
         return jsonify("Sent")
 
-@app.route("/send", methods=["GET", "POST"])
+@app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":
         print(request.json)
