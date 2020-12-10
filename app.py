@@ -1,3 +1,4 @@
+import os
 from flask import request, jsonify
 from flask_api import FlaskAPI
 from flask_cors import CORS
@@ -10,8 +11,15 @@ from scraper.models.types import ProductType
 app = FlaskAPI(__name__)
 CORS(app)
 
-engine = create_engine('postgres+psycopg2://vi:password@localhost:5432/kbpartpicker')
-session = sessionmaker(bind=engine)()
+prd = os.environ.get('DATABASE_URL')
+
+if prd:
+    print('prd')
+    engine = create_engine(prd)
+    session = sessionmaker(bind=engine)()
+else:
+    engine = create_engine('postgres+psycopg2://vi:password@localhost:5432/kbpartpicker')
+    session = sessionmaker(bind=engine)()
 
 # @app.route("/send", methods=["GET", "POST"])
 # def send():
