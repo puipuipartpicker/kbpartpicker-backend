@@ -13,26 +13,29 @@ CORS(app)
 engine = create_engine('postgres+psycopg2://vi:password@localhost:5432/kbpartpicker')
 session = sessionmaker(bind=engine)()
 
-@app.route("/send", methods=["GET", "POST"])
+# @app.route("/send", methods=["GET", "POST"])
+# def send():
+#     if request.method == "POST":
+#         print(request.json)
+#         return jsonify("Sent")
+
+@app.route("/search", methods=["GET", "POST"])
 def send():
     if request.method == "POST":
         print(request.json)
-        return jsonify("Sent")
-
-@app.route("/search", methods=["GET", "POST"])
-def search():
-    if request.method == "POST":
-        print(request.json)
-        category = request.data["category"]
-        query = request.data["query"]
+        category = request.json["category"]
+        query = request.json["query"].lower()
+        print(category)
         search = "%{}%".format(query)
         products = session.query(Product).filter(
             Product.name.like(search),
             Product.type == ProductType[category]
         )
-        pvs = session.query(VendorProductAssociation).filter_by(
+        print(products.all())
+        pvs = session.query(VendorProductAssociation).filter(
             VendorProductAssociation.product_id.in_([p.id for p in products])
         )
+        print(pvs.all())
         return [dict(
             name=pv.product.name,
             img_url=pv.product.img_url,
