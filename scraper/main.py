@@ -10,6 +10,8 @@ from sqlalchemy.orm import sessionmaker
 
 from .scrapers.novel_keys import NovelKeys
 
+#TODO use env values for db engine
+#TODO create .env file and add it to .gitignore
 
 def main(session, driver):
     NovelKeys(session, driver).run()
