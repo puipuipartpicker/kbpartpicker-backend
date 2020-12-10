@@ -20,11 +20,11 @@ session = sessionmaker(bind=engine)()
 #         return jsonify("Sent")
 
 @app.route("/search", methods=["GET", "POST"])
-def send():
+def search():
     if request.method == "POST":
         print(request.json)
         category = request.json["category"]
-        query = request.json["query"].lower()
+        query = request.json["query"]
         print(category)
         search = "%{}%".format(query)
         products = session.query(Product).filter(
