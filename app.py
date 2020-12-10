@@ -36,13 +36,13 @@ def search():
             VendorProductAssociation.product_id.in_([p.id for p in products])
         )
         print(pvs.all())
-        return [dict(
+        return jsonify([dict(
             name=pv.product.name,
             img_url=pv.product.img_url,
             in_stock=pv.in_stock,
             price=pv.price,
             vendor=pv.vendor.name
-        ) for pv in pvs]
+        ) for pv in pvs])
 
 if __name__ == "__main__":
     app.run(debug=True)
