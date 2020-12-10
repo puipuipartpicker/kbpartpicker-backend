@@ -19,13 +19,13 @@ class Product(Base):
     layout = Column(ChoiceType(LayoutType, impl=Integer()))
     hotswap = Column(Boolean)
 
-    def cleanup_name(self):
-        if self.type == ProductType.switch:
-            self.name = re.sub(r' Switches', '', self.name)
+#     def cleanup_name(self):
+#         if self.type == ProductType.switch:
+#             self.name = re.sub(r' Switches', '', self.name)
 
 
-def cleanup_name(mapper, connection, target):
-    target.cleanup_name()
+# def cleanup_name(mapper, connection, target):
+#     target.cleanup_name()
 
 
-listen(Product, 'before_insert', cleanup_name)
+# listen(Product, 'before_insert', cleanup_name)

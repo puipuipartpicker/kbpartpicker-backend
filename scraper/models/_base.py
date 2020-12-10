@@ -25,6 +25,7 @@ class BaseModel:
         query = session.query(cls).filter_by(**kwargs).with_lockmode("update")
         instance = query.one_or_none()
         if instance:
+            print("no insert", kwargs)
             session.commit()
             return instance, False
         else:
@@ -36,6 +37,7 @@ class BaseModel:
             try:
                 session.add(instance)
                 session.commit()
+                print("insert", kwargs)
                 return instance, True
             except IntegrityError as e:
                 error_message = e.args[0]

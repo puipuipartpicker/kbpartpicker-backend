@@ -16,6 +16,7 @@ def main(session, driver):
 
 prd = os.environ.get('DATABASE_URL')
 if prd:
+    print('prd')
     engine = create_engine(prd)
     session = sessionmaker(bind=engine)()
     chrome_options = webdriver.ChromeOptions()
@@ -25,6 +26,7 @@ if prd:
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 else:
+    print('dev')
     engine = create_engine('postgres+psycopg2://vi:password@localhost:5432/kbpartpicker')
     session = sessionmaker(bind=engine)()
     chrome_options = webdriver.ChromeOptions()

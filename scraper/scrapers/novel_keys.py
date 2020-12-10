@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import Select
 
+from ._base import BaseScraper
 from ..models.types import ProductType, LayoutType, SizeType
 from ..models import Product, Vendor, VendorProductAssociation
 
@@ -17,8 +18,6 @@ PRODUCT_URLS = [
     product('switches', ProductType.switch, ['Sample', 'Big']),
     product('keycaps', ProductType.keyset, [])
 ]
-
-# TODO: Make a base class to share between other scrapers
 
 
 class NovelKeys():
@@ -35,6 +34,7 @@ class NovelKeys():
         for product in PRODUCT_URLS:
             self.driver.get(f"{self.vendor_url}{product.url}")
             self.product = product
+            self.base_scraper = BaseScraper(self.session, self.product, self.vendor)
             self._run()
 
     def _run(self):
@@ -77,7 +77,7 @@ class NovelKeys():
         else:
             items = [self._get_details(name)]
         for item in items:
-            self._update_or_insert(**item)
+            self.base_scraper.update_or_insert(**item)
     
     def _get_details(self, name):
         return dict(
@@ -86,23 +86,6 @@ class NovelKeys():
             price=self._get_price(),
             in_stock=self._get_availability(),
         )
-
-    def _update_or_insert(self, name, img_url, price, in_stock):
-        print(name, price, img_url)    
-        product, is_new = Product.get_or_create(
-            self.session,
-            name=name,
-            img_url=img_url,
-            type=self.product.type
-        )
-        pv, is_new = VendorProductAssociation.get_or_create(
-            self.session,
-            product_id=product.id,
-            vendor_id=self.vendor.id
-        )
-        pv.price = price
-        pv.in_stock = in_stock
-        self.session.commit()
 
     def _get_pagination(self):
         try:
