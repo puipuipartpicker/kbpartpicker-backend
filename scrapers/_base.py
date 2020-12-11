@@ -25,6 +25,7 @@ class BaseScraper():
         product.img_url = img_url
         pv.price = price
         pv.in_stock = in_stock
+        print(name)
         self.session.commit()
 
     def _cleanup_name(self, name):

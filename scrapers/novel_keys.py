@@ -1,5 +1,6 @@
 # https://medium.com/@mikelcbrowne/running-chromedriver-with-python-selenium-on-heroku-acc1566d161c
 import re
+import time
 from collections import namedtuple
 from selenium import webdriver 
 from selenium.webdriver.common.by import By 
@@ -13,10 +14,18 @@ from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
 
 
-product = namedtuple('product', 'url type ignore')
+product = namedtuple('product', 'url type ignore include')
 PRODUCT_URLS = [
-    product('switches', ProductType.switch, ['Sample', 'Big']),
-    product('keycaps', ProductType.keyset, [])
+    product('switches', ProductType.switch, ['sample', 'big'], []),
+    product('keycaps', ProductType.keyset, [], []),
+    product('keyboards', ProductType.kit, [], []),
+    product('diy-kits', ProductType.pcb, [], ['pcb']),
+    product('diy-kits', ProductType.kit, [], ['kit']),
+    product('miscellaneous', ProductType.stabilizer, [], ['stabilizers']),
+    product('miscellaneous', ProductType.lube, [], ['lubricants']),
+    product('miscellaneous', ProductType.film, [], ['films']),
+    product('miscellaneous', ProductType.spring, [], ['springs']),
+    product('miscellaneous', ProductType.tool, [], ['puller, opener'])
 ]
 
 
@@ -57,10 +66,16 @@ class NovelKeys():
         while i < len(cards) - 1:
             card = self.driver.find_elements_by_class_name("grid-view-item__link")[i]
             name = card.find_element_by_class_name("visually-hidden").text
-            if set(self.product.ignore) & set(name.split(' ')):  # ignore products containing bad words
-                i += 1
-                continue
+            if self.product.ignore:
+                if set(self.product.ignore) & set(name.lower().split(' ')):  # ignore products containing bad words
+                    i += 1
+                    continue
+            elif self.product.include:
+                if set(self.product.include) & set(name.lower().split(' ')):  # include only products with words in name
+                    i += 1
+                    continue
             card.click()
+            time.sleep(1) # let page load before scrape
             self._scrape_and_insert()
             i += 1
             self.driver.back()
