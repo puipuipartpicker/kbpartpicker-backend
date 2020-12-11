@@ -5,21 +5,13 @@ from flask import Flask, request, jsonify
 # from flask_api import FlaskAPI
 from flask_cors import CORS
 
+from config.database import session
 from models import Product, VendorProductAssociation
 from models.types import ProductType
 
 app = Flask(__name__)
 CORS(app)
 
-prd = os.environ.get('DATABASE_URL')
-
-if prd:
-    print('prd')
-    engine = create_engine(prd)
-    session = sessionmaker(bind=engine)()
-else:
-    engine = create_engine('postgres+psycopg2://vi:password@localhost:5432/kbpartpicker')
-    session = sessionmaker(bind=engine)()
 
 # @app.route("/send", methods=["GET", "POST"])
 # def send():

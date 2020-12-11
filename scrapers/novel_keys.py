@@ -9,8 +9,8 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import Select
 
 from ._base import BaseScraper
-from ..models.types import ProductType, LayoutType, SizeType
-from ..models import Product, Vendor, VendorProductAssociation
+from models.types import ProductType, LayoutType, SizeType
+from models import Product, Vendor, VendorProductAssociation
 
 
 product = namedtuple('product', 'url type ignore')

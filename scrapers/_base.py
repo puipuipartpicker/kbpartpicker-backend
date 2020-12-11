@@ -1,6 +1,6 @@
 import re
-from ..models.types import ProductType, LayoutType, SizeType
-from ..models import Product, Vendor, VendorProductAssociation
+from models.types import ProductType, LayoutType, SizeType
+from models import Product, Vendor, VendorProductAssociation
 
 
 class BaseScraper():

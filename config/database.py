@@ -1,7 +1,7 @@
-
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-engine = create_engine('postgres+psycopg2://vi:password@localhost:5432/kbpartpicker')
+engine = create_engine(os.getenv("DATABASE_URL"))
 session = sessionmaker(bind=engine)()

@@ -8,7 +8,8 @@ from selenium.webdriver.support.ui import Select
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .scrapers.novel_keys import NovelKeys
+from scrapers.novel_keys import NovelKeys
+from config.database import session
 
 #TODO use env values for db engine
 #TODO create .env file and add it to .gitignore
@@ -16,11 +17,9 @@ from .scrapers.novel_keys import NovelKeys
 def main(session, driver):
     NovelKeys(session, driver).run()
 
-prd = os.environ.get('DATABASE_URL')
-if prd:
+mode = os.environ.get('MODE')
+if mode == 'prd':
     print('prd')
-    engine = create_engine(prd)
-    session = sessionmaker(bind=engine)()
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -29,8 +28,6 @@ if prd:
     driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 else:
     print('dev')
-    engine = create_engine('postgres+psycopg2://vi:password@localhost:5432/kbpartpicker')
-    session = sessionmaker(bind=engine)()
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
     driver = webdriver.Chrome()
