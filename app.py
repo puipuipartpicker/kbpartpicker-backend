@@ -4,8 +4,6 @@ import os
 from flask import Flask, request, jsonify
 # from flask_api import FlaskAPI
 from flask_cors import CORS
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 from models import Product, VendorProductAssociation
 from models.types import ProductType
@@ -54,9 +52,9 @@ def search():
             vendor=pv.vendor.name
         ) for pv in pvs]})
     
-    @app.route('/')
-    def index():
-        return "<h1>Welcome to our server !!</h1>"
+@app.route('/')
+def index():
+    return "<h1>Welcome to our server !!</h1>"
 
 if __name__ == "__main__":
     # app.run(debug=True)
