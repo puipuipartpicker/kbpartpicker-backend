@@ -13,29 +13,19 @@ app = Flask(__name__)
 CORS(app)
 
 
-# @app.route("/send", methods=["GET", "POST"])
-# def send():
-#     if request.method == "POST":
-#         print(request.json)
-#         return jsonify("Sent")
-
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":
-        print(request.json)
         category = request.json["category"]
         query = request.json["query"]
-        print(category)
-        search = "%{}%".format(query)
+        search = f"%{query}%"
         products = session.query(Product).filter(
-            Product.name.like(search),
+            Product.name.ilike(search),
             Product.type == ProductType[category]
         )
-        print(products.all())
         pvs = session.query(VendorProductAssociation).filter(
             VendorProductAssociation.product_id.in_([p.id for p in products])
         )
-        print(pvs.all())
         return jsonify({"data": [dict(
             name=pv.product.name,
             img_url=pv.product.img_url,
@@ -46,7 +36,7 @@ def search():
     
 @app.route('/')
 def index():
-    return "<h1>Welcome to our server !!</h1>"
+    return "<h1>KBPARTPICKER TOWN!!</h1>"
 
 if __name__ == "__main__":
     # app.run(debug=True)
