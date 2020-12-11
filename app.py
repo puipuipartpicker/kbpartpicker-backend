@@ -1,14 +1,16 @@
+# https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04
+
 import os
-from flask import request, jsonify
-from flask_api import FlaskAPI
+from flask import Flask, request, jsonify
+# from flask_api import FlaskAPI
 from flask_cors import CORS
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from scraper.models import Product, VendorProductAssociation
-from scraper.models.types import ProductType
+from models import Product, VendorProductAssociation
+from models.types import ProductType
 
-app = FlaskAPI(__name__)
+app = Flask(__name__)
 CORS(app)
 
 prd = os.environ.get('DATABASE_URL')
@@ -51,6 +53,11 @@ def search():
             price=pv.price,
             vendor=pv.vendor.name
         ) for pv in pvs]})
+    
+    @app.route('/')
+    def index():
+        return "<h1>Welcome to our server !!</h1>"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(threaded=True, port=5000)
