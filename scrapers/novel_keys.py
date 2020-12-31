@@ -14,18 +14,18 @@ from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
 
 
-product = namedtuple('product', 'url type ignore include')
-PRODUCT_URLS = [
-    product('switches', ProductType.switch, ['sample', 'big'], []),
-    product('keycaps', ProductType.keyset, [], []),
-    product('keyboards', ProductType.kit, [], []),
-    product('diy-kits', ProductType.pcb, [], ['pcb']),
-    product('diy-kits', ProductType.kit, [], ['kit']),
-    product('miscellaneous', ProductType.stabilizer, [], ['stabilizers']),
-    product('miscellaneous', ProductType.lube, [], ['lubricants']),
-    product('miscellaneous', ProductType.film, [], ['films']),
-    product('miscellaneous', ProductType.spring, [], ['springs']),
-    product('miscellaneous', ProductType.tool, [], ['puller, opener'])
+Product = namedtuple('Product', 'url type ignore include')
+Products = [
+    Product('switches', ProductType.switch, ['sample', 'big'], []),
+    Product('keycaps', ProductType.keyset, [], []),
+    Product('keyboards', ProductType.kit, [], []),
+    Product('diy-kits', ProductType.pcb, [], ['pcb']),
+    Product('diy-kits', ProductType.kit, [], ['kit']),
+    Product('miscellaneous', ProductType.stabilizer, [], ['stabilizers']),
+    Product('miscellaneous', ProductType.lube, [], ['lubricants']),
+    Product('miscellaneous', ProductType.film, [], ['films']),
+    Product('miscellaneous', ProductType.spring, [], ['springs']),
+    Product('miscellaneous', ProductType.tool, [], ['puller, opener'])
 ]
 
 
@@ -40,7 +40,7 @@ class NovelKeys():
         self.product = None
 
     def run(self):
-        for product in PRODUCT_URLS:
+        for product in Products:
             self.driver.get(f"{self.vendor_url}{product.url}")
             self.product = product
             self.base_scraper = BaseScraper(self.session, self.product, self.vendor)
@@ -70,8 +70,8 @@ class NovelKeys():
                 if set(self.product.ignore) & set(name.lower().split(' ')):  # ignore products containing bad words
                     i += 1
                     continue
-            elif self.product.include:
-                if set(self.product.include) & set(name.lower().split(' ')):  # include only products with words in name
+            if self.product.include:
+                if not set(self.product.include) & set(name.lower().split(' ')):  # include only products with words in name
                     i += 1
                     continue
             card.click()
