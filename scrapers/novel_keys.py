@@ -1,4 +1,5 @@
 # https://medium.com/@mikelcbrowne/running-chromedriver-with-python-selenium-on-heroku-acc1566d161c
+import time
 import re
 from collections import namedtuple
 from selenium import webdriver 
@@ -61,6 +62,7 @@ class NovelKeys():
                 i += 1
                 continue
             card.click()
+            time.sleep(10)
             self._scrape_and_insert()
             i += 1
             self.driver.back()
@@ -73,32 +75,40 @@ class NovelKeys():
         if options and not options_are_count:
             for o in options.options[1:]:
                 o.click()    
-                items.append(self._get_details(name, o, options_are_count))
+                items.append(self._get_details(name, o.text, options_are_count))
         elif options and options_are_count:
-            o = options[1]
+            o = options.options[1]
             o.click()
-            items.append(self._get_details(name, o, options_are_count))
+            items.append(self._get_details(name, o.text, options_are_count))
         else:
-            items = [self._get_details(name)]
+            items = [self._get_details(name, None, False)]
         for item in items:
+            print(item)
             self.base_scraper.update_or_insert(**item)
     
-    def _get_details(self, name, o, count):
+    def _get_details(self, name, option, count):
         return dict(
-            name=self._make_name(name, o),
+            name=self._make_name(name, option, count),
             img_url=self._get_img_url(),
-            price=self._get_price(count, o.text),
+            price=self._get_price(count, option),
             in_stock=self._get_availability(),
         )
     
     def _are_options_count(self):
-        return self.driver.find_element_by_xpath(
-            '//label[@for="SingleOptionSelector-0"]'
-        ).text == "Count"
+        try:
+            return self.driver.find_element_by_xpath(
+                '//label[@for="SingleOptionSelector-0"]'
+            ).text == "Count"
+        except NoSuchElementException:
+            return None
     
     @staticmethod
-    def _make_name(name, o):
-        return f"{name} {o.text}"
+    def _make_name(name, option, count):
+        if count:
+            return name
+        if not option:
+            return name
+        return f"{name} {option}"
 
     def _get_pagination(self):
         try:
@@ -111,10 +121,9 @@ class NovelKeys():
 
     def _get_options(self):
         try:
-            types = Select(self.driver.find_element_by_id('SingleOptionSelector-0'))
+            return Select(self.driver.find_element_by_id('SingleOptionSelector-0'))
         except NoSuchElementException:
             return None
-        return types
     
     def _get_price(self, is_count, count):
         try:
@@ -123,12 +132,12 @@ class NovelKeys():
                 self.driver.find_element_by_class_name("price-item").text
             ).group(0))
             if is_count:
-                price = price / count
+                price = price / int(count)
+            return price
         except NoSuchElementException:
             return None
         except AttributeError:
             return None
-        return price
     
     def _get_availability(self):
         try:
