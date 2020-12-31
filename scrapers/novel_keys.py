@@ -68,24 +68,37 @@ class NovelKeys():
     def _scrape_and_insert(self):
         name = self.driver.find_element_by_class_name("product-single__title").text
         options = self._get_options()
+        options_are_count = self._are_options_count() # first item is "Pick"
         items = []
-        if options:
+        if options and not options_are_count:
             for o in options.options[1:]:
                 o.click()    
-                name_option = f"{name} {o.text}"
-                items.append(self._get_details(name_option))
+                items.append(self._get_details(name, o, options_are_count))
+        elif options and options_are_count:
+            o = options[1]
+            o.click()
+            items.append(self._get_details(name, o, options_are_count))
         else:
             items = [self._get_details(name)]
         for item in items:
             self.base_scraper.update_or_insert(**item)
     
-    def _get_details(self, name):
+    def _get_details(self, name, o, count):
         return dict(
-            name=name,
+            name=self._make_name(name, o),
             img_url=self._get_img_url(),
-            price=self._get_price(),
+            price=self._get_price(count, o.text),
             in_stock=self._get_availability(),
         )
+    
+    def _are_options_count(self):
+        return self.driver.find_element_by_xpath(
+            '//label[@for="SingleOptionSelector-0"]'
+        ).text == "Count"
+    
+    @staticmethod
+    def _make_name(name, o):
+        return f"{name} {o.text}"
 
     def _get_pagination(self):
         try:
@@ -103,12 +116,14 @@ class NovelKeys():
             return None
         return types
     
-    def _get_price(self):
+    def _get_price(self, is_count, count):
         try:
             price = float(re.search(
                 r"\d+.\d{1,2}$",
                 self.driver.find_element_by_class_name("price-item").text
             ).group(0))
+            if is_count:
+                price = price / count
         except NoSuchElementException:
             return None
         except AttributeError:
