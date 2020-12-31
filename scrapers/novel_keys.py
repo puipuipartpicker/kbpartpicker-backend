@@ -82,8 +82,8 @@ class NovelKeys():
     
     def _scrape_and_insert(self):
         name = self.driver.find_element_by_class_name("product-single__title").text
-        options = self._get_options()
         items = []
+        options = self._get_options()
         if options:
             for o in options.options[1:]:
                 o.click()    
