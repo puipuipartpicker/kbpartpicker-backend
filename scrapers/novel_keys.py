@@ -44,24 +44,26 @@ class NovelKeys(BaseScraper):
         options = self._get_options() # first item is title of Select
         options_are_count = self._are_options_count() 
         variants = []
+        pv_url = self.driver.current_url
         if options and not options_are_count:
             for o in options.options[1:]:
                 o.click()    
-                variants.append(self._get_details(name, o.text))
+                variants.append(self._get_details(name, o.text, pv_url))
         elif options and options_are_count:
             o = options.options[1]
             o.click()
-            variants.append(self._get_details(name, o.text, options_are_count))
+            variants.append(self._get_details(name, o.text, pv_url, options_are_count))
         else:
-            variants = [self._get_details(name, None)]
+            variants = [self._get_details(name, None, pv_url)]
         return variants
 
-    def _get_details(self, name, option, count=False):
+    def _get_details(self, name, option, pv_url, count=False):
         return dict(
             name=self._make_name(name, option, count),
             img_url=self._get_img_url(),
             price=self._get_price(option, count),
             in_stock=self._get_availability(),
+            pv_url=pv_url
         )
     
     def _are_options_count(self):

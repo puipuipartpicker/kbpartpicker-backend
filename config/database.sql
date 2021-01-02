@@ -3,8 +3,8 @@
 --
 -- https://tableplus.com/
 --
--- Database: d3rlthphvuvi6b
--- Generation Time: 2021-01-02 19:04:00.8160
+-- Database: kbpartpicker
+-- Generation Time: 2021-01-02 21:49:44.2220
 -- -------------------------------------------------------------
 
 
@@ -57,6 +57,7 @@ CREATE TABLE "public"."vendor_product_associations" (
     "vendor_id" int4 NOT NULL,
     "in_stock" bool,
     "price" float8,
+    "url" varchar,
     "created_at" timestamp NOT NULL,
     "updated_at" timestamp NOT NULL,
     PRIMARY KEY ("id")

@@ -13,10 +13,26 @@ app = Flask(__name__)
 CORS(app)
 
 
-# @app.route("/get", methods=["GET", "POST"])
-# def get():
-#     if request.method == "GET":
-#         product_id = 
+@app.route("/get", methods=["GET"])
+def get():
+    if request.method == "GET":
+        product_id = request.args.get("id")
+        product = session.query(Product).get(int(product_id))
+        pvs = session.query(VendorProductAssociation).filter(
+            VendorProductAssociation.product_id.is_(product_id)
+        )
+        return jsonify(dict(
+            name=product.name,
+            img_url=product.img_url,
+            vendors=[
+                dict(
+                    name=pv.name,
+                    url=pv.url,
+                    price=pv.product.price,
+                    in_stock=pv.product.in_stock
+                ) for pv in pvs
+            ]
+        ))
 
 @app.route("/search", methods=["GET", "POST"])
 def search():

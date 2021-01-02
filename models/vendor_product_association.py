@@ -14,6 +14,7 @@ class VendorProductAssociation(Base):
         'Vendor', backref='vendor_product_associations', foreign_keys=[vendor_id])
     price = Column(Float)
     in_stock = Column(Boolean)
+    url = Column(Text, nullable=False)
 
     # def update_or_insert(self, session, vendor):
         

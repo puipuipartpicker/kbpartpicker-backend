@@ -10,7 +10,7 @@ class DatabaseAction():
         self.product = product
         self.vendor = vendor
 
-    def update_or_insert(self, name, img_url, price, in_stock):
+    def update_or_insert(self, name, img_url, price, in_stock, pv_url):
         name = self._cleanup_name(name)
         product, is_new = Product.get_or_create(
             self.session,
@@ -25,6 +25,8 @@ class DatabaseAction():
         product.img_url = img_url
         pv.price = price
         pv.in_stock = in_stock
+        pv.url = pv_url
+        print(pv.url)
         self.session.commit()
 
     def _cleanup_name(self, name):
