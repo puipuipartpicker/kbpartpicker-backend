@@ -62,7 +62,7 @@ class NovelKeys():
                 i += 1
                 continue
             card.click()
-            time.sleep(10)
+            time.sleep(1)
             self._scrape_and_insert()
             i += 1
             self.driver.back()
@@ -132,7 +132,7 @@ class NovelKeys():
                 self.driver.find_element_by_class_name("price-item").text
             ).group(0))
             if is_count:
-                price = price / int(count)
+                price = (price / int(count)) * 10
             return price
         except NoSuchElementException:
             return None
