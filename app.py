@@ -26,14 +26,14 @@ def search():
         pvs = session.query(VendorProductAssociation).filter(
             VendorProductAssociation.product_id.in_([p.id for p in products])
         )
-        return jsonify({"data": [dict(
+        return jsonify([dict(
             id=pv.product.id,
             name=pv.product.name,
             img_url=pv.product.img_url,
             in_stock=pv.in_stock,
             price=pv.price,
             vendor=dict(name=pv.vendor.name, url=pv.vendor.url)
-        ) for pv in pvs]})
+        ) for pv in pvs])
     
 @app.route('/')
 def index():
