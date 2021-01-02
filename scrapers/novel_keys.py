@@ -14,6 +14,13 @@ from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
 
 
+"""
+TODO:
+1. Extract main logic to Base Class
+2. Write tests
+3. Scrape all products on Novelkeys
+"""
+
 product = namedtuple('product', 'url type ignore')
 PRODUCT_URLS = [
     product('switches', ProductType.switch, ['Sample', 'Big']),
