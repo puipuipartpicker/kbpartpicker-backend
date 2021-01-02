@@ -12,11 +12,17 @@ from models.types import ProductType
 app = Flask(__name__)
 CORS(app)
 
+
+# @app.route("/get", methods=["GET", "POST"])
+# def get():
+#     if request.method == "GET":
+#         product_id = 
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "GET":
-        category = request.args.get["category"]
-        query = request.args.get["query"]
+        category = request.args.get("category")
+        query = request.args.get("query")
         search = f"%{query}%"
         products = session.query(Product).filter(
             Product.name.ilike(search),
