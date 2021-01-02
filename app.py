@@ -32,7 +32,7 @@ def search():
             img_url=pv.product.img_url,
             in_stock=pv.in_stock,
             price=pv.price,
-            vendor=pv.vendor.name
+            vendor=dict(name=pv.vendor.name, url=pv.vendor.url)
         ) for pv in pvs]})
     
 @app.route('/')
