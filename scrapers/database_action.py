@@ -26,7 +26,6 @@ class DatabaseAction():
         pv.price = price
         pv.in_stock = in_stock
         pv.url = pv_url
-        print(pv.url)
         self.session.commit()
 
     def _cleanup_name(self, name):
