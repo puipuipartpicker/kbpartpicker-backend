@@ -91,9 +91,12 @@ class NovelKeys(BaseScraper):
                 r"\d+.\d{1,2}$",
                 self.driver.find_element_by_class_name("price-item").text
             ).group(0))
-            if is_count:
-                price = price / int(count)
-            return price * 10
+            if self.product.type == ProductType.switch:
+                if is_count:
+                    price = price / int(count)
+                return price * 10
+            else:
+                return price
         except NoSuchElementException:
             return None
         except AttributeError:
