@@ -15,8 +15,8 @@ CORS(app)
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "GET":
-        category = request.json["category"]
-        query = request.json["query"]
+        category = request.args.get["category"]
+        query = request.args.get["query"]
         search = f"%{query}%"
         products = session.query(Product).filter(
             Product.name.ilike(search),
