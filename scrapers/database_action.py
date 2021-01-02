@@ -3,7 +3,7 @@ from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
 
 
-class database_action():
+class DatabaseAction():
 
     def __init__(self, session, product, vendor):
         self.session = session

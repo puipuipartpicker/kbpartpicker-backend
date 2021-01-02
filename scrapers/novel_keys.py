@@ -18,7 +18,8 @@ from models import Product, Vendor, VendorProductAssociation
 TODO:
 1. Extract main logic to Base Class
 2. Write tests
-3. Scrape all products on Novelkeys
+3. Add currency
+4. Scrape all products on Novelkeys
 """
 
 product = namedtuple('product', 'url type ignore')
@@ -92,7 +93,7 @@ class NovelKeys(BaseScraper):
             ).group(0))
             if self.product.type == ProductType.switch:
                 if is_count:
-                    price = price / int(count)
+                    price = round(price / int(count), 2)
                 return price * 10
             else:
                 return price
