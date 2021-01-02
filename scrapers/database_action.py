@@ -3,7 +3,7 @@ from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
 
 
-class CommonScraper():
+class database_action():
 
     def __init__(self, session, product, vendor):
         self.session = session

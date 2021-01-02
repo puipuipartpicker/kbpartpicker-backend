@@ -10,7 +10,6 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import Select
 
 from ._base import BaseScraper
-from ._common import CommonScraper
 from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
 
@@ -93,8 +92,8 @@ class NovelKeys(BaseScraper):
                 self.driver.find_element_by_class_name("price-item").text
             ).group(0))
             if is_count:
-                price = (price / int(count)) * 10
-            return price
+                price = price / int(count)
+            return price * 10
         except NoSuchElementException:
             return None
         except AttributeError:
