@@ -40,32 +40,22 @@ class NovelKeys(BaseScraper):
         self.product = None
         self.product_urls = PRODUCT_URLS
 
-    def _click_page(self):
-        print("child")
-        (self.driver
-            .find_element_by_class_name("pagination")
-            .find_element_by_css_selector("a")
-            .click())
-
-    def _scrape_and_insert(self):
-        name = self.driver.find_element_by_class_name("product-single__title").text
-        options = self._get_options()
-        options_are_count = self._are_options_count() # first item is "Pick"
-        items = []
+    def _get_variants(self, name):
+        options = self._get_options() # first item is title of Select
+        options_are_count = self._are_options_count() 
+        variants = []
         if options and not options_are_count:
             for o in options.options[1:]:
                 o.click()    
-                items.append(self._get_details(name, o.text, options_are_count))
+                variants.append(self._get_details(name, o.text, options_are_count))
         elif options and options_are_count:
             o = options.options[1]
             o.click()
-            items.append(self._get_details(name, o.text, options_are_count))
+            variants.append(self._get_details(name, o.text, options_are_count))
         else:
-            items = [self._get_details(name, None, False)]
-        for item in items:
-            print(item)
-            self.common_scraper.update_or_insert(**item)
-    
+            variants = [self._get_details(name, None, False)]
+        return variants
+
     def _get_details(self, name, option, count):
         return dict(
             name=self._make_name(name, option, count),
@@ -89,11 +79,6 @@ class NovelKeys(BaseScraper):
         if not option:
             return name
         return f"{name} {option}"
-
-    def _get_pages(self):
-        pagination = self.driver.find_element_by_class_name("pagination")
-        pages = pagination.find_element_by_class_name("pagination__text").text
-        return re.findall(r"\d+", pages)
 
     def _get_options(self):
         try:
@@ -135,12 +120,7 @@ class NovelKeys(BaseScraper):
         else:
             return img.get_attribute("src")
     
-    def _get_cards(self):
-        return self.driver.find_elements_by_class_name("grid-view-item__link")
-    
-    @staticmethod
-    def _get_card_name(card):
-        return card.find_element_by_class_name("visually-hidden").text
-
-    def _get_product_name(self):
-        return self.driver.find_element_by_class_name("product-single__title").text
+    def _get_pages(self):
+        pagination = self.driver.find_element_by_class_name("pagination")
+        pages = pagination.find_element_by_class_name("pagination__text").text
+        return re.findall(r"\d+", pages)

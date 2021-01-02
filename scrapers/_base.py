@@ -1,3 +1,4 @@
+import re
 import time
 from ._common import CommonScraper
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
@@ -44,14 +45,20 @@ class BaseScraper():
         else:
             self._scrape_each_on_page()
     
+    def _click_page(self):
+        (self.driver
+            .find_element_by_class_name("pagination")
+            .find_element_by_css_selector("a")
+            .click())
+
     def _scrape_each_on_page(self):
         i = 0
         while i < len(self._get_cards()) - 1:
             card = self._get_cards()[i]
             card.click()
             time.sleep(1) # wait for product page to load
-            self._scrape_and_insert()
-            self.driver.back()
+            self._scrape_and_insert() # insert product details to database
+            self.driver.back() # return to list page
             i += 1
     
     def _get_pagination(self):
@@ -64,22 +71,9 @@ class BaseScraper():
         name = self._get_product_name()
         if set(self.product.ignore) & set(name.split(' ')):  # ignore products containing bad words
             return
-        options = self._get_options() # first item is title of Select
-        options_are_count = self._are_options_count() 
-        items = []
-        if options and not options_are_count:
-            for o in options.options[1:]:
-                o.click()    
-                items.append(self._get_details(name, o.text, options_are_count))
-        elif options and options_are_count:
-            o = options.options[1]
-            o.click()
-            items.append(self._get_details(name, o.text, options_are_count))
-        else:
-            items = [self._get_details(name, None, False)]
-        for item in items:
-            print(item)
-            self.common_scraper.update_or_insert(**item)
+        variants = self._get_variants(name)
+        for variant in variants:
+            self.common_scraper.update_or_insert(**variant)
     
     # def _get_details(self, name, option, count):
     #     return dict(
@@ -99,7 +93,7 @@ class BaseScraper():
     
     # @staticmethod
     # def _make_name(name, option, count):
-    #     if count:
+        #     if count:
     #         return name
     #     if not option:
     #         return name
@@ -129,7 +123,7 @@ class BaseScraper():
     #         return None
     
     # def _get_availability(self):
-    #     try:
+        #     try:
     #         availability = self.driver.find_element_by_id('AddToCartText-product-template').text
     #     except NoSuchElementException:
     #         return False
@@ -147,3 +141,13 @@ class BaseScraper():
     #         return None
     #     else:
     #         return img.get_attribute("src")
+
+    def _get_cards(self):
+        return self.driver.find_elements_by_class_name("grid-view-item__link")
+    
+    @staticmethod
+    def _get_card_name(card):
+        return card.find_element_by_class_name("visually-hidden").text
+
+    def _get_product_name(self):
+        return self.driver.find_element_by_class_name("product-single__title").text
