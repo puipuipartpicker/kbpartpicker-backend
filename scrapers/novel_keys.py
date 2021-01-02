@@ -1,4 +1,5 @@
 # https://medium.com/@mikelcbrowne/running-chromedriver-with-python-selenium-on-heroku-acc1566d161c
+import time
 import re
 import time
 from collections import namedtuple
@@ -75,32 +76,63 @@ class NovelKeys():
                     i += 1
                     continue
             card.click()
+<<<<<<< HEAD
             time.sleep(1) # let page load before scrape
+=======
+            time.sleep(10)
+>>>>>>> main
             self._scrape_and_insert()
             i += 1
             self.driver.back()
     
     def _scrape_and_insert(self):
         name = self.driver.find_element_by_class_name("product-single__title").text
+<<<<<<< HEAD
         items = []
         options = self._get_options()
         if options:
+=======
+        options = self._get_options()
+        options_are_count = self._are_options_count() # first item is "Pick"
+        items = []
+        if options and not options_are_count:
+>>>>>>> main
             for o in options.options[1:]:
                 o.click()    
-                name_option = f"{name} {o.text}"
-                items.append(self._get_details(name_option))
+                items.append(self._get_details(name, o.text, options_are_count))
+        elif options and options_are_count:
+            o = options.options[1]
+            o.click()
+            items.append(self._get_details(name, o.text, options_are_count))
         else:
-            items = [self._get_details(name)]
+            items = [self._get_details(name, None, False)]
         for item in items:
+            print(item)
             self.base_scraper.update_or_insert(**item)
     
-    def _get_details(self, name):
+    def _get_details(self, name, option, count):
         return dict(
-            name=name,
+            name=self._make_name(name, option, count),
             img_url=self._get_img_url(),
-            price=self._get_price(),
+            price=self._get_price(count, option),
             in_stock=self._get_availability(),
         )
+    
+    def _are_options_count(self):
+        try:
+            return self.driver.find_element_by_xpath(
+                '//label[@for="SingleOptionSelector-0"]'
+            ).text == "Count"
+        except NoSuchElementException:
+            return None
+    
+    @staticmethod
+    def _make_name(name, option, count):
+        if count:
+            return name
+        if not option:
+            return name
+        return f"{name} {option}"
 
     def _get_pagination(self):
         try:
@@ -113,22 +145,23 @@ class NovelKeys():
 
     def _get_options(self):
         try:
-            types = Select(self.driver.find_element_by_id('SingleOptionSelector-0'))
+            return Select(self.driver.find_element_by_id('SingleOptionSelector-0'))
         except NoSuchElementException:
             return None
-        return types
     
-    def _get_price(self):
+    def _get_price(self, is_count, count):
         try:
             price = float(re.search(
                 r"\d+.\d{1,2}$",
                 self.driver.find_element_by_class_name("price-item").text
             ).group(0))
+            if is_count:
+                price = price / int(count)
+            return price
         except NoSuchElementException:
             return None
         except AttributeError:
             return None
-        return price
     
     def _get_availability(self):
         try:
