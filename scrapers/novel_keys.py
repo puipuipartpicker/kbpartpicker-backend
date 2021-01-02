@@ -46,20 +46,20 @@ class NovelKeys(BaseScraper):
         if options and not options_are_count:
             for o in options.options[1:]:
                 o.click()    
-                variants.append(self._get_details(name, o.text, options_are_count))
+                variants.append(self._get_details(name, o.text))
         elif options and options_are_count:
             o = options.options[1]
             o.click()
             variants.append(self._get_details(name, o.text, options_are_count))
         else:
-            variants = [self._get_details(name, None, False)]
+            variants = [self._get_details(name, None)]
         return variants
 
-    def _get_details(self, name, option, count):
+    def _get_details(self, name, option, count=False):
         return dict(
             name=self._make_name(name, option, count),
             img_url=self._get_img_url(),
-            price=self._get_price(count, option),
+            price=self._get_price(option, count),
             in_stock=self._get_availability(),
         )
     
@@ -73,11 +73,10 @@ class NovelKeys(BaseScraper):
     
     @staticmethod
     def _make_name(name, option, count):
-        if count:
+        if not count and option:
+            return f"{name} {option}"
+        else:
             return name
-        if not option:
-            return name
-        return f"{name} {option}"
 
     def _get_options(self):
         try:
@@ -85,7 +84,7 @@ class NovelKeys(BaseScraper):
         except NoSuchElementException:
             return None
     
-    def _get_price(self, is_count, count):
+    def _get_price(self, count, is_count):
         try:
             price = float(re.search(
                 r"\d+.\d{1,2}$",
