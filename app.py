@@ -12,10 +12,9 @@ from models.types import ProductType
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route("/search", methods=["GET", "POST"])
 def search():
-    if request.method == "POST":
+    if request.method == "GET":
         category = request.json["category"]
         query = request.json["query"]
         search = f"%{query}%"
