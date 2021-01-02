@@ -10,6 +10,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import Select
 
 from ._base import BaseScraper
+from ._common import CommonScraper
 from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
 
@@ -21,7 +22,7 @@ PRODUCT_URLS = [
 ]
 
 
-class NovelKeys():
+class NovelKeys(BaseScraper):
 
     def __init__(self, session, driver):
         self.session = session
@@ -30,43 +31,15 @@ class NovelKeys():
         self.vendor, _ = Vendor.get_or_create(self.session, name='NovelKeys', url=self.vendor_url)
         self.results = []
         self.product = None
+        self.product_urls = PRODUCT_URLS
 
-    def run(self):
-        for product in PRODUCT_URLS:
-            self.driver.get(f"{self.vendor_url}{product.url}")
-            self.product = product
-            self.base_scraper = BaseScraper(self.session, self.product, self.vendor)
-            self._run()
+    def _click_page(self):
+        print("child")
+        (self.driver
+            .find_element_by_class_name("pagination")
+            .find_element_by_css_selector("a")
+            .click())
 
-    def _run(self):
-        page_nums = self._get_pagination()
-        if page_nums:
-            while page_nums[0] != page_nums[-1]:
-                self._scrape_each_on_page()
-                (self.driver
-                    .find_element_by_class_name("pagination")
-                    .find_element_by_css_selector("a")
-                    .click())
-                page_nums = self._get_pagination()
-            self._scrape_each_on_page()
-        else:
-            self._scrape_each_on_page()
-    
-    def _scrape_each_on_page(self):
-        cards = self.driver.find_elements_by_class_name("grid-view-item__link")
-        i = 0
-        while i < len(cards) - 1:
-            card = self.driver.find_elements_by_class_name("grid-view-item__link")[i]
-            name = card.find_element_by_class_name("visually-hidden").text
-            if set(self.product.ignore) & set(name.split(' ')):  # ignore products containing bad words
-                i += 1
-                continue
-            card.click()
-            time.sleep(10)
-            self._scrape_and_insert()
-            i += 1
-            self.driver.back()
-    
     def _scrape_and_insert(self):
         name = self.driver.find_element_by_class_name("product-single__title").text
         options = self._get_options()
@@ -84,7 +57,7 @@ class NovelKeys():
             items = [self._get_details(name, None, False)]
         for item in items:
             print(item)
-            self.base_scraper.update_or_insert(**item)
+            self.common_scraper.update_or_insert(**item)
     
     def _get_details(self, name, option, count):
         return dict(
@@ -110,12 +83,8 @@ class NovelKeys():
             return name
         return f"{name} {option}"
 
-    def _get_pagination(self):
-        try:
-            pagination = self.driver.find_element_by_class_name("pagination")
-        except NoSuchElementException:
-            return None
-        
+    def _get_pages(self):
+        pagination = self.driver.find_element_by_class_name("pagination")
         pages = pagination.find_element_by_class_name("pagination__text").text
         return re.findall(r"\d+", pages)
 
@@ -158,3 +127,13 @@ class NovelKeys():
             return None
         else:
             return img.get_attribute("src")
+    
+    def _get_cards(self):
+        return self.driver.find_elements_by_class_name("grid-view-item__link")
+    
+    @staticmethod
+    def _get_card_name(card):
+        return card.find_element_by_class_name("visually-hidden").text
+
+    def _get_product_name(self):
+        return self.driver.find_element_by_class_name("product-single__title").text
