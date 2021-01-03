@@ -16,20 +16,20 @@ CORS(app)
 @app.route("/get", methods=["GET"])
 def get():
     if request.method == "GET":
-        product_id = request.args.get("id")
-        product = session.query(Product).get(int(product_id))
+        product_id = int(request.args.get("id"))
+        product = session.query(Product).get(product_id)
         pvs = session.query(VendorProductAssociation).filter(
-            VendorProductAssociation.product_id.is_(product_id)
+            VendorProductAssociation.product_id == product_id
         )
         return jsonify(dict(
             name=product.name,
             img_url=product.img_url,
             vendors=[
                 dict(
-                    name=pv.name,
+                    name=pv.vendor.name,
                     url=pv.url,
-                    price=pv.product.price,
-                    in_stock=pv.product.in_stock
+                    price=pv.price,
+                    in_stock=pv.in_stock
                 ) for pv in pvs
             ]
         ))
