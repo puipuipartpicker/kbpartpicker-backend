@@ -22,7 +22,7 @@ class NovelKeys(BaseScraper):
         super(NovelKeys, self).__init__(session, driver, product, name, url)
 
     def _get_variants(self, name):
-        options = self._get_options() # first item is title of Select
+        options = self._get_options() # first item is title of Select (eg. Pick a Type)
         options_are_count = self._are_options_count() 
         variants = []
         pv_url = self.driver.current_url
