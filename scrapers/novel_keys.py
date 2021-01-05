@@ -1,17 +1,12 @@
 # https://medium.com/@mikelcbrowne/running-chromedriver-with-python-selenium-on-heroku-acc1566d161c
 import time
 import re
-from collections import namedtuple
-from selenium import webdriver 
-from selenium.webdriver.common.by import By 
-from selenium.webdriver.support.ui import WebDriverWait 
-from selenium.webdriver.support import expected_conditions as EC 
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import Select
 
 from ._base import BaseScraper
 from models.types import ProductType, LayoutType, SizeType
 from models import Product, Vendor, VendorProductAssociation
+from utils.catch_noelem_exception import CatchNoElem
 
 
 """
@@ -53,13 +48,11 @@ class NovelKeys(BaseScraper):
             pv_url=pv_url
         )
     
+    @CatchNoElem()
     def _are_options_count(self):
-        try:
-            return self.driver.find_element_by_xpath(
-                '//label[@for="SingleOptionSelector-0"]'
-            ).text == "Count"
-        except NoSuchElementException:
-            return None
+        return self.driver.find_element_by_xpath(
+            '//label[@for="SingleOptionSelector-0"]'
+        ).text == "Count"
     
     @staticmethod
     def _make_name(name, option, count):
@@ -68,48 +61,37 @@ class NovelKeys(BaseScraper):
         else:
             return name
 
+    @CatchNoElem()
     def _get_options(self):
-        try:
-            return Select(self.driver.find_element_by_id('SingleOptionSelector-0'))
-        except NoSuchElementException:
-            return None
+        return Select(self.driver.find_element_by_id('SingleOptionSelector-0'))
     
+    @CatchNoElem()
     def _get_price(self, count, is_count):
-        try:
-            price = float(re.search(
-                r"\d+.\d{1,2}$",
-                self.driver.find_element_by_class_name("price-item").text
-            ).group(0))
-            if self.product.type == ProductType.switch:
-                if is_count:
-                    price = round(price / int(count), 2)
-                return price * 10
-            else:
-                return price
-        except NoSuchElementException:
+        price_search = re.search(
+            r"\d+.\d{1,2}$",
+            self.driver.find_element_by_class_name("price-item").text
+        )
+        if not price_search:
             return None
-        except AttributeError:
-            return None
+        price = float(price_search.group(0))
+        if self.product.type == ProductType.switch:
+            if is_count:
+                price = price / int(count)
+            return round(price * 10, 2)
+        else:
+            return price
     
+    @CatchNoElem()
     def _get_availability(self):
-        try:
-            availability = self.driver.find_element_by_id('AddToCartText-product-template').text
-        except NoSuchElementException:
-            return False
+        availability = self.driver.find_element_by_id('AddToCartText-product-template').text
         if availability == "UNAVAILABLE" or availability == "SOLD OUT":
             return False
         elif availability == "ADD TO CART":
             return True
-        else:
-            return False
     
+    @CatchNoElem()
     def _get_img_url(self):
-        try:
-            img = self.driver.find_element_by_class_name("zoomImg")
-        except NoSuchElementException:
-            return None
-        else:
-            return img.get_attribute("src")
+        return self.driver.find_element_by_class_name("zoomImg").get_attribute("srs")
     
     def _get_pages(self):
         pagination = self.driver.find_element_by_class_name("pagination")

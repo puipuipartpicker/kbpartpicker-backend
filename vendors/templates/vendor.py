@@ -1,7 +1,7 @@
 from attr import attrs, attrib
 from attr.validators import instance_of
 
-from .utils.list_of import list_of
+from utils.list_of import list_of
 from . import Product
 
 
