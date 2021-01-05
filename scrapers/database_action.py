@@ -12,12 +12,12 @@ class DatabaseAction():
 
     def update_or_insert(self, name, img_url, price, in_stock, pv_url):
         name = self._cleanup_name(name)
-        product, is_new = Product.get_or_create(
+        product, p_is_new = Product.get_or_create(
             self.session,
             name=name,
             type=self.product.type
         )
-        pv, is_new = VendorProductAssociation.get_or_create(
+        pv, pv_is_new = VendorProductAssociation.get_or_create(
             self.session,
             product_id=product.id,
             vendor_id=self.vendor.id
@@ -27,6 +27,7 @@ class DatabaseAction():
         pv.in_stock = in_stock
         pv.url = pv_url
         self.session.commit()
+        print(product.name, pv.vendor.name, "insert" if p_is_new else "update")
 
     def _cleanup_name(self, name):
         if self.product.type == ProductType.switch:

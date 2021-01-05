@@ -2,6 +2,9 @@ import re
 import time
 from .database_action import DatabaseAction
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.common.by import By 
+from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.support import expected_conditions as EC 
 
 from models import Vendor
 
@@ -30,6 +33,12 @@ class BaseScraper():
 
     def run(self):
         self.driver.get(f"{self.vendor_url}{self.product.url}")
+        timeout = 3
+        try:
+            element_present = EC.presence_of_element_located((By.ID, "Collection"))
+            WebDriverWait(self.driver, timeout).until(element_present)
+        except TimeoutException:
+            print("Timed out waiting for page to load")
         self._run()
 
     def _run(self):
