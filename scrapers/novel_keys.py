@@ -91,7 +91,6 @@ class NovelKeys(BaseScraper):
     
     @CatchNoElem()
     def _get_img_url(self):
-        print(self.driver.find_elements_by_tag_name("img")[0])
         return self.driver.find_elements_by_tag_name("img")[0].get_attribute("src")
     
     def _get_pages(self):
