@@ -91,7 +91,8 @@ class NovelKeys(BaseScraper):
     
     @CatchNoElem()
     def _get_img_url(self):
-        return self.driver.find_elements_by_tag_name("img")[0].get_attribute("src")
+        container = self.driver.find_element_by_id("ProductSection-product-template")
+        return container.find_elements_by_tag_name("img")[0].get_attribute("src")
     
     def _get_pages(self):
         pagination = self.driver.find_element_by_class_name("pagination")

@@ -11,6 +11,7 @@ def CatchNoElem(return_value=None):
             try:
                 return func(*args, **kwargs)
             except NoSuchElementException:
+                print("No Such Element")
                 return None
         return _internal
     return _decorator
