@@ -3,6 +3,8 @@ import time
 from .database_action import DatabaseAction
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+from models import Vendor
+
 
 """
 novelkeys
@@ -18,21 +20,17 @@ dailyclack
 
 class BaseScraper():
     
-    def __init__(self, session, driver):
+    def __init__(self, session, driver, product, name, url):
         self.session = session
         self.driver = driver
-        self.vendor_url = None
-        self.vendor, _ = None
-        self.results = []
-        self.product = None
-        self.product_urls = None
+        self.product = product
+        self.vendor_url = url
+        self.vendor, _ = Vendor.get_or_create(self.session, name=name, url=url)
+        self.database_action = DatabaseAction(self.session, self.product, self.vendor)
 
     def run(self):
-        for product in self.product_urls:
-            self.driver.get(f"{self.vendor_url}{product.url}")
-            self.product = product
-            self.database_action = DatabaseAction(self.session, self.product, self.vendor)
-            self._run()
+        self.driver.get(f"{self.vendor_url}{self.product.url}")
+        self._run()
 
     def _run(self):
         page_nums = self._get_pagination()

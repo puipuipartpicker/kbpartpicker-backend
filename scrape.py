@@ -8,36 +8,36 @@ from selenium.webdriver.support.ui import Select
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from scrapers.novel_keys import NovelKeys
+from vendors import nk_vendor
 from config.database import session
 
-#TODO use env values for db engine
-#TODO create .env file and add it to .gitignore
 
 def main(session, driver):
-    NovelKeys(session, driver).run()
+    for product in nk_vendor.products:
+        nk_vendor.scraper(session, driver, product, nk_vendor.name, nk_vendor.url).run()
 
-mode = os.environ.get('MODE')
-if mode == 'prd':
-    print('prd')
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-else:
-    print('dev')
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")
-    driver = webdriver.Chrome()
-timeout = 3
-try:
-    element_present = EC.presence_of_element_located((By.ID, 'main'))
-    WebDriverWait(driver, timeout).until(element_present)
-except TimeoutException:
-    print("Timed out waiting for page to load")
-finally:
-    main(session, driver)
-    driver.close()
-    session.close()
+if __name__ == "__main__":
+    mode = os.environ.get('MODE')
+    if mode == 'prd':
+        print('prd')
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+    else:
+        print('dev')
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--headless")
+        driver = webdriver.Chrome()
+    timeout = 3
+    try:
+        element_present = EC.presence_of_element_located((By.ID, 'main'))
+        WebDriverWait(driver, timeout).until(element_present)
+    except TimeoutException:
+        print("Timed out waiting for page to load")
+    finally:
+        main(session, driver)
+        driver.close()
+        session.close()

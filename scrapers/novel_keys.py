@@ -22,23 +22,10 @@ TODO:
 4. Scrape all products on Novelkeys
 """
 
-product = namedtuple('product', 'url type ignore')
-PRODUCT_URLS = [
-    product('switches', ProductType.switch, ['Sample', 'Big']),
-    product('keycaps', ProductType.keyset, [])
-]
-
-
 class NovelKeys(BaseScraper):
 
-    def __init__(self, session, driver):
-        self.session = session
-        self.driver = driver
-        self.vendor_url = "https://novelkeys.xyz/collections/" 
-        self.vendor, _ = Vendor.get_or_create(self.session, name='NovelKeys', url=self.vendor_url)
-        self.results = []
-        self.product = None
-        self.product_urls = PRODUCT_URLS
+    def __init__(self, session, driver, product, name, url):
+        super(NovelKeys, self).__init__(session, driver, product, name, url)
 
     def _get_variants(self, name):
         options = self._get_options() # first item is title of Select
