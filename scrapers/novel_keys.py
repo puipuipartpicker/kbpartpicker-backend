@@ -11,9 +11,8 @@ from utils.catch_noelem_exception import CatchNoElem
 
 """
 TODO:
-1. Extract main logic to Base Class
 2. Write tests
-3. Add currency
+3. Add currency (Create form for backend API to fill out manually)
 4. Scrape all products on Novelkeys
 """
 
