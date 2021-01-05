@@ -11,9 +11,8 @@ from utils.catch_noelem_exception import CatchNoElem
 
 """
 TODO:
-1. Extract main logic to Base Class
 2. Write tests
-3. Add currency
+3. Add currency (Create form for backend API to fill out manually)
 4. Scrape all products on Novelkeys
 """
 
@@ -81,7 +80,7 @@ class NovelKeys(BaseScraper):
         else:
             return price
     
-    @CatchNoElem()
+    @CatchNoElem(return_none=False)
     def _get_availability(self):
         availability = self.driver.find_element_by_id('AddToCartText-product-template').text
         if availability == "UNAVAILABLE" or availability == "SOLD OUT":
@@ -89,9 +88,10 @@ class NovelKeys(BaseScraper):
         elif availability == "ADD TO CART":
             return True
     
-    @CatchNoElem()
+    @CatchNoElem(return_none=False)
     def _get_img_url(self):
-        return self.driver.find_elements_by_tag_name("img")[0].get_attribute("src")
+        container = self.driver.find_element_by_id("ProductSection-product-template")
+        return container.find_elements_by_tag_name("img")[0].get_attribute("src")
     
     def _get_pages(self):
         pagination = self.driver.find_element_by_class_name("pagination")
