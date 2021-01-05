@@ -4,4 +4,4 @@ from sqlalchemy.orm import sessionmaker
 
 
 engine = create_engine(os.getenv("DATABASE_URL"))
-session = sessionmaker(bind=engine)()
+session_maker = sessionmaker(bind=engine)

@@ -1,11 +1,24 @@
 import pytest
 import unittest
+from pytest import fixture
 from unittest.mock import patch
 
-from config.database import session
-from config.driver import driver
+from config.driver import driver_maker
+from config.database import session_maker
 from scrapers import NovelKeys, DatabaseAction
 from vendors import nk_vendor
+
+
+@fixture
+def default_session():
+    session = session_maker()
+    yield session
+
+
+@fixture
+def default_driver():
+    driver = driver_maker()
+    yield driver
 
 
 def mock_update_or_insert(self, name, img_url, price, in_stock, pv_url):
@@ -16,24 +29,18 @@ def mock_update_or_insert(self, name, img_url, price, in_stock, pv_url):
     if price is not None:
         assert isinstance(price, float)
 
-class TestNovelKeys(unittest.TestCase):
-
-    def setUp(self): 
-        self.session = session
-        self.driver = driver
-
-    def testScrapeSwitches(self):
-        nk = NovelKeys(
-            self.session,
-            self.driver,
-            nk_vendor.products[0],
-            nk_vendor.name,
-            nk_vendor.url
-        )
-        with patch.object(DatabaseAction, 'update_or_insert', mock_update_or_insert):
-            name = nk.run()
+@pytest.mark.parametrize("i", list(range(len(nk_vendor.products))), ids=[p.type.name for p in nk_vendor.products])
+def test_scrape(default_session, default_driver, i):
+    nk = NovelKeys(
+        default_session,
+        default_driver,
+        nk_vendor.products[i],
+        nk_vendor.name,
+        nk_vendor.url
+    )
+    with patch.object(DatabaseAction, 'update_or_insert', mock_update_or_insert):
+        name = nk.run()
     
-    def tearDown(self):
-        self.session.rollback()
-        self.session.close()
-        self.driver.close()
+    default_session.rollback()
+    default_session.close()
+    default_driver.close()

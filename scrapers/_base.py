@@ -76,8 +76,12 @@ class BaseScraper():
     
     def _scrape_and_insert(self):
         name = self._get_product_name()
-        if set(self.product.ignore) & set(name.split(' ')):  # ignore products containing bad words
-            return
+        if self.product.ignore:
+            if set(self.product.ignore) & set(name.lower().split(' ')):  # ignore products containing bad words
+                return
+        if self.product.include:
+            if not set(self.product.include) & set(name.lower().split(' ')):  # include only products with words in name
+                return
         variants = self._get_variants(name)
         for variant in variants:
             self.database_action.update_or_insert(**variant)
