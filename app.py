@@ -27,7 +27,8 @@ def get():
             vendors=[
                 dict(
                     name=pv.vendor.name,
-                    url=pv.url,
+                    vendor_url=pv.vendor.url,
+                    product_url=pv.url,
                     price=pv.price,
                     in_stock=pv.in_stock
                 ) for pv in pvs
