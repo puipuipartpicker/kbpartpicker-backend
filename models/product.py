@@ -6,9 +6,7 @@ from sqlalchemy.types import Boolean, Text, Integer, Float
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy.event import listen
 
-from .types.product_type import ProductType
-from .types.layout_type import LayoutType
-from .types.size_type import SizeType
+from .types import ProductType, LayoutType, SizeType, StabilizerType
 
 class Product(Base):
 
@@ -17,6 +15,7 @@ class Product(Base):
     type = Column(ChoiceType(ProductType, impl=Integer()), nullable=False)
     size = Column(ChoiceType(SizeType, impl=Integer()))
     layout = Column(ChoiceType(LayoutType, impl=Integer()))
+    stabilizer_type = Column(ChoiceType(StabilizerType, impl=Integer()))
     hotswap = Column(Boolean)
 
 #     def cleanup_name(self):
