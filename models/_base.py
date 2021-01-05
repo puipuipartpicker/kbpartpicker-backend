@@ -22,7 +22,7 @@ class BaseModel:
 
     @classmethod
     def get_or_create(cls, session, **kwargs):
-        query = session.query(cls).filter_by(**kwargs).with_lockmode("update")
+        query = session.query(cls).filter_by(**kwargs).with_for_update()
         instance = query.one_or_none()
         if instance:
             session.commit()
