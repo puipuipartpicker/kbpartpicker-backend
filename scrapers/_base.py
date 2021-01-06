@@ -19,6 +19,7 @@ cannonkeys
 candykeys
 ilumkb
 dailyclack
+prototypist
 """
 
 class BaseScraper():
