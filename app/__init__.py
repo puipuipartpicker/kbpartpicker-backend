@@ -10,6 +10,7 @@ from config.database import db
 
 
 # TODO Add authorization
+# https://github.com/flask-admin/flask-admin/blob/master/examples/auth-flask-login/app.py
 
 
 def create_app():
