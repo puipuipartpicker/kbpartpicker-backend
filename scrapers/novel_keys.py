@@ -4,8 +4,8 @@ import re
 from selenium.webdriver.support.ui import Select
 
 from ._base import BaseScraper
-from models.types import ProductType, LayoutType, SizeType
-from models import Product, Vendor, VendorProductAssociation
+from app.models.types import ProductType, LayoutType, SizeType
+from app.models import Product, Vendor, VendorProductAssociation
 from utils.catch_noelem_exception import CatchNoElem
 
 
@@ -91,8 +91,9 @@ class NovelKeys(BaseScraper):
     
     @CatchNoElem(return_none=False)
     def _get_img_url(self):
-        container = self.driver.find_element_by_id("ProductSection-product-template")
-        return container.find_elements_by_tag_name("img")[0].get_attribute("src")
+        # container = self.driver.find_element_by_id("ProductSection-product-template")
+        # return container.find_elements_by_tag_name("img")[0].get_attribute("src")
+        return self.driver.find_element_by_class_name("zoomImg").get_attribute("src")
     
     def _get_pages(self):
         pagination = self.driver.find_element_by_class_name("pagination")
