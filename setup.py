@@ -8,6 +8,7 @@ import os
 # SQLite for this example
 SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+FLASK_ADMIN_SWATCH = 'cyborg'
 DATABASE_CONNECT_OPTIONS = {}
 
 # Application threads. A common general assumption is
