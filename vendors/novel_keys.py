@@ -6,7 +6,7 @@ nk_products = [
     Product(
         url='switches',
         type=ProductType.switch,
-        ignore=['Sample', 'Big'],
+        ignore=['sample', 'big'],
     ),
     Product(
         url='keycaps', 
@@ -27,10 +27,14 @@ nk_products = [
         include=['kit']
     ),
     Product(
-        url='miscellaneous',
-        type=ProductType.stabilizer,
-        include=['stabilizers']
+        url='deskpads',
+        type=ProductType.deskmat
     ),
+    # Product(
+    #     url='miscellaneous',
+    #     type=ProductType.stabilizer,
+    #     include=['stabilizers']
+    # ),
     Product(
         url='miscellaneous',
         type=ProductType.lube,

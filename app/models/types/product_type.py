@@ -14,3 +14,4 @@ class ProductType(Enum):
     film = 8
     spring = 9
     tool = 10
+    deskmat = 11

@@ -41,7 +41,7 @@ class NovelKeys(BaseScraper):
 
     def _get_details(self, name, option, pv_url, count=False):
         return dict(
-            name=self._make_name(name, option, count),
+            name=self._make_name(self._cleanup_name(name), option, count),
             img_url=self._get_img_url(),
             price=self._get_price(option, count),
             in_stock=self._get_availability(),
@@ -99,3 +99,14 @@ class NovelKeys(BaseScraper):
         pagination = self.driver.find_element_by_class_name("pagination")
         pages = pagination.find_element_by_class_name("pagination__text").text
         return re.findall(r"\d+", pages)
+
+    def _cleanup_name(self, name):
+        if self.product.type == ProductType.switch:
+            name = re.sub(r' Switches', '', name)
+        elif self.product.type == ProductType.deskmat:
+            name = re.sub(r' Deskpad', '', name)
+        elif self.product.type == ProductType.pcb:
+            name = re.sub(r' PCB', '', name)
+        elif self.product.type == ProductType.keyset:
+            name = re.sub(r'( Keycaps| Keycap Set)', '', name)
+        return name
