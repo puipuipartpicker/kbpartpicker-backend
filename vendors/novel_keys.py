@@ -1,4 +1,4 @@
-from models.types import ProductType
+from app.models.types import ProductType
 from .templates import Product, Vendor
 from scrapers.novel_keys import NovelKeys
 

@@ -4,13 +4,14 @@ import re
 from selenium.webdriver.support.ui import Select
 
 from ._base import BaseScraper
-from models.types import ProductType, LayoutType, SizeType
-from models import Product, Vendor, VendorProductAssociation
+from app.models.types import ProductType, LayoutType, SizeType
+from app.models import Product, Vendor, VendorProductAssociation
 from utils.catch_noelem_exception import CatchNoElem
 
 
 """
 TODO:
+1. Add migration scripts (https://realpython.com/customize-django-admin-python/)
 2. Write tests
 3. Add currency (Create form for backend API to fill out manually)
 4. Scrape all products on Novelkeys
@@ -22,7 +23,7 @@ class NovelKeys(BaseScraper):
         super(NovelKeys, self).__init__(session, driver, product, name, url)
 
     def _get_variants(self, name):
-        options = self._get_options() # first item is title of Select
+        options = self._get_options() # first item is title of Select (eg. Pick a Type)
         options_are_count = self._are_options_count() 
         variants = []
         pv_url = self.driver.current_url
@@ -90,8 +91,9 @@ class NovelKeys(BaseScraper):
     
     @CatchNoElem(return_none=False)
     def _get_img_url(self):
-        container = self.driver.find_element_by_id("ProductSection-product-template")
-        return container.find_elements_by_tag_name("img")[0].get_attribute("src")
+        # container = self.driver.find_element_by_id("ProductSection-product-template")
+        # return container.find_elements_by_tag_name("img")[0].get_attribute("src")
+        return self.driver.find_element_by_class_name("zoomImg").get_attribute("src")
     
     def _get_pages(self):
         pagination = self.driver.find_element_by_class_name("pagination")

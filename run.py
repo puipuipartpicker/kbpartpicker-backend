@@ -3,24 +3,24 @@
 import os
 from flask import Flask, request, jsonify
 # from flask_api import FlaskAPI
-from flask_cors import CORS
 
-from config.database import session
-from models import Product, VendorProductAssociation
-from models.types import ProductType
-
-app = Flask(__name__)
-CORS(app)
+from app.models import Product, VendorProductAssociation
+from app.models.types import ProductType
+from app import app
+from config.database import db
 
 
 @app.route("/get", methods=["GET"])
 def get():
     if request.method == "GET":
         product_id = int(request.args.get("id"))
-        product = session.query(Product).get(product_id)
-        pvs = session.query(VendorProductAssociation).filter(
+        product = Product.query.get(product_id)
+        pvs = VendorProductAssociation.query.filter(
             VendorProductAssociation.product_id == product_id
         )
+        # pvs = session.query(VendorProductAssociation).filter(
+        #     VendorProductAssociation.product_id == product_id
+        # )
         return jsonify(dict(
             name=product.name,
             img_url=product.img_url,
@@ -41,11 +41,11 @@ def search():
         category = request.args.get("category")
         query = request.args.get("query")
         search = f"%{query}%"
-        products = session.query(Product).filter(
+        products = Product.query.filter(
             Product.name.ilike(search),
             Product.type == ProductType[category]
         )
-        pvs = session.query(VendorProductAssociation).filter(
+        pvs = VendorProductAssociation.query.filter(
             VendorProductAssociation.product_id.in_([p.id for p in products])
         )
         return jsonify([dict(
