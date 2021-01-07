@@ -9,56 +9,56 @@ nk_products = [
         ignore=['sample', 'big'],
         remove=' Switches'
     ),
-    Product(
-        url='keycaps', 
-        type=ProductType.keyset,
-        remove=r'( Keycaps| Keycap Set)'
-    ),
-    Product(
-        url='keyboards',
-        type=ProductType.kit
-    ),
-    Product(
-        url='diy-kits',
-        type=ProductType.pcb, 
-        include=['pcb'],
-        remove=' PCB'
-    ),
-    Product(
-        url='diy-kits',
-        type=ProductType.kit,
-        include=['kit']
-    ),
-    Product(
-        url='deskpads',
-        type=ProductType.deskmat,
-        remove=' Deskpad'
-    ),
+    # Product(
+    #     url='keycaps', 
+    #     type=ProductType.keyset,
+    #     remove=r'( Keycaps| Keycap Set)'
+    # ),
+    # Product(
+    #     url='keyboards',
+    #     type=ProductType.kit
+    # ),
+    # Product(
+    #     url='diy-kits',
+    #     type=ProductType.pcb, 
+    #     include=['pcb'],
+    #     remove=' PCB'
+    # ),
+    # Product(
+    #     url='diy-kits',
+    #     type=ProductType.kit,
+    #     include=['kit']
+    # ),
+    # Product(
+    #     url='deskpads',
+    #     type=ProductType.deskmat,
+    #     remove=' Deskpad'
+    # ),
+    # # Product(
+    # #     url='miscellaneous',
+    # #     type=ProductType.stabilizer,
+    # #     include=['stabilizers']
+    # # ),
     # Product(
     #     url='miscellaneous',
-    #     type=ProductType.stabilizer,
-    #     include=['stabilizers']
+    #     type=ProductType.lube,
+    #     include=['lubricants']
     # ),
-    Product(
-        url='miscellaneous',
-        type=ProductType.lube,
-        include=['lubricants']
-    ),
-    Product(
-        url='miscellaneous',
-        type=ProductType.film,
-        include=['films']
-    ),
-    Product(
-        url='miscellaneous',
-        type=ProductType.spring,
-        include=['springs']
-    ),
-    Product(
-        url='miscellaneous',
-        type=ProductType.tool,
-        include=['puller, opener']
-    )
+    # Product(
+    #     url='miscellaneous',
+    #     type=ProductType.film,
+    #     include=['films']
+    # ),
+    # Product(
+    #     url='miscellaneous',
+    #     type=ProductType.spring,
+    #     include=['springs']
+    # ),
+    # Product(
+    #     url='miscellaneous',
+    #     type=ProductType.tool,
+    #     include=['puller, opener']
+    # )
 ]
 
 nk_vendor = Vendor(

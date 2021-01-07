@@ -41,11 +41,20 @@ class NovelKeys(BaseScraper):
 
     def _get_details(self, name, option, pv_url, count=False):
         return dict(
-            name=self._make_name(self._cleanup_name(name), option, count),
-            img_url=self._get_img_url(),
-            price=self._get_price(option, count),
-            in_stock=self._get_availability(),
-            pv_url=pv_url
+            product_details=dict(
+                name=self._make_name(self._cleanup_name(name), option, count),
+                img_url=self._get_img_url(),
+                product_type=self.product.type,
+                size=None,
+                layout=None,
+                stabilizer_type=None,
+                hotswap=None
+            ),
+            pv_details=dict(
+                price=self._get_price(option, count),
+                in_stock=self._get_availability(),
+                pv_url=pv_url
+            )
         )
     
     @CatchNoElem()

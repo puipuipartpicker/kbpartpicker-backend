@@ -43,7 +43,7 @@ def search():
         search = f"%{query}%"
         products = Product.query.filter(
             Product.name.ilike(search),
-            Product.type == ProductType[category]
+            Product.product_type == ProductType[category]
         )
         pvs = VendorProductAssociation.query.filter(
             VendorProductAssociation.product_id.in_([p.id for p in products])
