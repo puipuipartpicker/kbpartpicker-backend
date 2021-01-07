@@ -8,6 +8,7 @@ from app.models.types import ProductType
 @attrs
 class Product:
     url = attrib(validator=instance_of(str))
-    product_type = attrib(validator=instance_of(ProductType))
+    type = attrib(validator=instance_of(ProductType))
     ignore = attrib(validator=optional(list_of(str)), default=[])
     include = attrib(validator=optional(list_of(str)), default=[])
+    remove = attrib(validator=optional(instance_of(str)), default='')

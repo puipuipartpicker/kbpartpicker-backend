@@ -101,12 +101,6 @@ class NovelKeys(BaseScraper):
         return re.findall(r"\d+", pages)
 
     def _cleanup_name(self, name):
-        if self.product.type == ProductType.switch:
-            name = re.sub(r' Switches', '', name)
-        elif self.product.type == ProductType.deskmat:
-            name = re.sub(r' Deskpad', '', name)
-        elif self.product.type == ProductType.pcb:
-            name = re.sub(r' PCB', '', name)
-        elif self.product.type == ProductType.keyset:
-            name = re.sub(r'( Keycaps| Keycap Set)', '', name)
+        if self.product.remove:
+            return re.sub(self.product.remove, '', name)
         return name

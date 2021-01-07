@@ -7,10 +7,12 @@ nk_products = [
         url='switches',
         type=ProductType.switch,
         ignore=['sample', 'big'],
+        remove=' Switches'
     ),
     Product(
         url='keycaps', 
-        type=ProductType.keyset
+        type=ProductType.keyset,
+        remove=r'( Keycaps| Keycap Set)'
     ),
     Product(
         url='keyboards',
@@ -19,7 +21,8 @@ nk_products = [
     Product(
         url='diy-kits',
         type=ProductType.pcb, 
-        include=['pcb']
+        include=['pcb'],
+        remove=' PCB'
     ),
     Product(
         url='diy-kits',
@@ -28,7 +31,8 @@ nk_products = [
     ),
     Product(
         url='deskpads',
-        type=ProductType.deskmat
+        type=ProductType.deskmat,
+        remove=' Deskpad'
     ),
     # Product(
     #     url='miscellaneous',
