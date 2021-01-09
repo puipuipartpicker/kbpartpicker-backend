@@ -9,5 +9,5 @@ class LayoutType(Enum):
     seventyfive_percent = 3
     tenkeyless = 4
     winkeyless = 5
-    hhkb = 6
+    frowless = 6
     full_size = 7
