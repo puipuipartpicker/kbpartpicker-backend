@@ -2,6 +2,9 @@
 import time
 import re
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By 
+from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
 from app.models.types import ProductType, LayoutType, SizeType
@@ -46,11 +49,12 @@ class NovelKeys(BaseScraper):
                 img_url=self._get_img_url(),
                 product_type=self.product.type,
                 size=None,
-                layout=None,
+                layout=self._get_layout(name),
                 stabilizer_type=None,
-                hotswap=None
+                hotswap=self._is_hotswap(option)
             ),
             pv_details=dict(
+                vendor=self.vendor,
                 price=self._get_price(option, count),
                 in_stock=self._get_availability(),
                 pv_url=pv_url
@@ -102,7 +106,10 @@ class NovelKeys(BaseScraper):
     def _get_img_url(self):
         # container = self.driver.find_element_by_id("ProductSection-product-template")
         # return container.find_elements_by_tag_name("img")[0].get_attribute("src")
-        return self.driver.find_element_by_class_name("zoomImg").get_attribute("src")
+        timeout = 10
+        wait = WebDriverWait(self.driver, timeout)
+        img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "zoomImg")))
+        return img.get_attribute("src")
     
     def _get_pages(self):
         pagination = self.driver.find_element_by_class_name("pagination")
@@ -113,3 +120,17 @@ class NovelKeys(BaseScraper):
         if self.product.remove:
             return re.sub(self.product.remove, '', name)
         return name
+
+    def _is_hotswap(self, option):
+        if option and option.lower() == 'hotswap':
+            return True
+        else:
+            ps = self.driver.find_elements_by_tag_name("p")
+            return 'hotswap' in  " ".join([p.text for p in ps]).split(" ")
+    
+    def _get_layout(self, name):
+        if (self.product.type == ProductType.case or
+            self.product.type == ProductType.pcb or
+            self.product.type == ProductType.kit):
+                return self._literal_to_enum(name)
+        return None

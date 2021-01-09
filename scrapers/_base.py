@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 
 from app.models import Vendor
+from app.models.types import LayoutType
+from utils.regex_dict import RegexDict
 
 
 """
@@ -30,7 +32,7 @@ class BaseScraper():
         self.product = product
         self.vendor_url = url
         self.vendor, _ = Vendor.get_or_create(self.session, name=name, url=url)
-        self.database_action = DatabaseAction(self.session, self.product, self.vendor)
+        self.database_action = DatabaseAction(self.session)
 
     def run(self):
         self.driver.get(f"{self.vendor_url}{self.product.url}")
@@ -92,3 +94,16 @@ class BaseScraper():
     
     def _get_product_name(self):
         return self.driver.find_element_by_class_name("product-single__title").text
+
+    @staticmethod
+    def _literal_to_enum(literal):
+        reg_dict = RegexDict()
+        reg_dict[re.compile(r"4[0-9]|Forty", re.I)] = LayoutType.forty_percent
+        reg_dict[re.compile(r"60|Sixty", re.I)] = LayoutType.sixty_percent
+        reg_dict[re.compile(r"6[5-9]|Sixty-Five|Sixtyfive", re.I)] = LayoutType.sixtyfive_percent
+        reg_dict[re.compile(r"7[0-9]|Seventy-Five|Seventyfive", re.I)] = LayoutType.seventyfive_percent
+        reg_dict[re.compile(r"8[0-9]|TKL|Tenkeyless", re.I)] = LayoutType.tenkeyless
+        try:
+            return reg_dict[literal]
+        except KeyError:
+            return None
