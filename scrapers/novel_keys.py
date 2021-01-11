@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
-from app.models.types import ProductType, LayoutType, SizeType
+from app.models.types import ProductType, LayoutType, SizeType, StabilizerType
 from app.models import Product, Vendor, VendorProductAssociation
 from utils.catch_noelem_exception import CatchNoElem
 from utils.regex_dict import RegexDict
@@ -30,43 +30,51 @@ class NovelKeys(BaseScraper):
         options = self._get_options() # first item is title of Select (eg. Pick a Type)
         options_are_count = self._are_options_count() 
         variants = []
-        pv_url = self.driver.current_url
         if self.product.type == ProductType.stabilizer:
-            stabilizer_types = self._get_stabilizer_types()
             for o in options.options[1:]:
-                for t in stabilizer_types:
-                    pass
-            pass
+                o.click()
+                stabilizer_types = self._get_options(1)
+                if stabilizer_types:
+                    for t in stabilizer_types.options[1:]:
+                        t.click()
+                        variants.append(self._get_details(name, o.text, t.text))
+                else:
+                    variants.append(self._get_details(name, o.text))
         elif options and not options_are_count:
             for o in options.options[1:]:
                 o.click()    
-                variants.append(self._get_details(name, o.text, pv_url))
+                variants.append(self._get_details(name, o.text))
         elif options and options_are_count:
             o = options.options[1]
             o.click()
-            variants.append(self._get_details(name, o.text, pv_url, options_are_count))
+            variants.append(self._get_details(name, o.text, count=options_are_count))
         else:
-            variants = [self._get_details(name, None, pv_url)]
+            variants = [self._get_details(name)]
         return variants
 
-    def _get_details(self, name, option, pv_url, count=False):
-        #TODO: refactor to use dict[key] = value syntax
+    def _get_details(self, name, option=None, stab_type=None, count=False):
+        product_details = dict()
+        pv_details = dict()
+
+        product_details['name'] = self._make_name(self._cleanup_name(name), option, count)
+        product_details['product_type'] = self.product.type
+        product_details['img_url'] = self._get_img_url()
+        if self.product.type == ProductType.stabilizer:
+            product_details['size'] = self._get_stabilizer_size(option)
+            product_details['stabilizer_type'] = self._get_stabilizer_type(stab_type)
+        if self._product_with_layout():
+            product_details['layout'] = self._get_layout(name)
+        if self._hotswappable_product():
+            product_details['hotswap'] = self._is_hotswap(option)
+
+        pv_details['vendor_id'] = self.vendor.id
+        pv_details['price'] = self._get_price(option, count)
+        pv_details['in_stock'] = self._get_availability()
+        pv_details['pv_url'] = self.driver.current_url
+
         return dict(
-            product_details=dict(
-                name=self._make_name(self._cleanup_name(name), option, count),
-                img_url=self._get_img_url(),
-                product_type=self.product.type,
-                size=self._get_stabilizer_size(option) if self.product.type == ProductType.stabilizer else None,
-                layout=self._get_layout(name),
-                stabilizer_type=self._get_stabilizer_type() if self.product.type == ProductType.stabilizer else None,
-                hotswap=self._is_hotswap(option)
-            ),
-            pv_details=dict(
-                vendor_id=self.vendor.id,
-                price=self._get_price(option, count),
-                in_stock=self._get_availability(),
-                pv_url=pv_url
-            )
+            product_details=product_details,
+            pv_details=pv_details
         )
     
     @CatchNoElem()
@@ -85,8 +93,8 @@ class NovelKeys(BaseScraper):
                 return name
 
     @CatchNoElem()
-    def _get_options(self):
-        return Select(self.driver.find_element_by_id('SingleOptionSelector-0'))
+    def _get_options(self, dropdown_id=0):
+        return Select(self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}'))
     
     @CatchNoElem()
     def _get_price(self, count, is_count):
@@ -142,16 +150,12 @@ class NovelKeys(BaseScraper):
             return 'hotswap' in  " ".join(ps).split(" ")
     
     def _get_layout(self, name):
-        if (self.product.type == ProductType.case or
-            self.product.type == ProductType.pcb or
-            self.product.type == ProductType.kit):
+        if self._product_with_layout:
                 return self._literal_to_enum(name)
         return None
     
     def _get_stabilizer_size(self, size):
         # TODO: abstract logic to base class
-        if not self.product.type == ProductType.stabilzer:
-            return None
         return {
             "7u":SizeType.seven_u,
             "2u":SizeType.two_u,
@@ -159,7 +163,18 @@ class NovelKeys(BaseScraper):
         }.get(size)
 
 
-    def _get_stabilizer_types(self):
-        if not self.product.type == ProductType.stabilizer:
+    def _get_stabilizer_type(self, type_name):
+        if not type_name:
             return None
-        pass
+        formatted = '_'.join(type_name.lower().split(' '))
+        return StabilizerType[formatted]
+
+    def _product_with_layout(self):
+        return (self.product.type == ProductType.case or
+                self.product.type == ProductType.pcb or
+                self.product.type == ProductType.kit)
+    
+    def _hotswappable_product(self):
+        return (self.product.type == ProductType.pcb or
+                self.product.type == ProductType.kit)
+
