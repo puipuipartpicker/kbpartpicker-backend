@@ -10,6 +10,7 @@ from ._base import BaseScraper
 from app.models.types import ProductType, LayoutType, SizeType
 from app.models import Product, Vendor, VendorProductAssociation
 from utils.catch_noelem_exception import CatchNoElem
+from utils.regex_dict import RegexDict
 
 
 """
@@ -30,7 +31,13 @@ class NovelKeys(BaseScraper):
         options_are_count = self._are_options_count() 
         variants = []
         pv_url = self.driver.current_url
-        if options and not options_are_count:
+        if self.product.type == ProductType.stabilizer:
+            stabilizer_types = self._get_stabilizer_types()
+            for o in options.options[1:]:
+                for t in stabilizer_types:
+                    pass
+            pass
+        elif options and not options_are_count:
             for o in options.options[1:]:
                 o.click()    
                 variants.append(self._get_details(name, o.text, pv_url))
@@ -43,14 +50,15 @@ class NovelKeys(BaseScraper):
         return variants
 
     def _get_details(self, name, option, pv_url, count=False):
+        #TODO: refactor to use dict[key] = value syntax
         return dict(
             product_details=dict(
                 name=self._make_name(self._cleanup_name(name), option, count),
                 img_url=self._get_img_url(),
                 product_type=self.product.type,
-                size=None,
+                size=self._get_stabilizer_size(option) if self.product.type == ProductType.stabilizer else None,
                 layout=self._get_layout(name),
-                stabilizer_type=None,
+                stabilizer_type=self._get_stabilizer_type() if self.product.type == ProductType.stabilizer else None,
                 hotswap=self._is_hotswap(option)
             ),
             pv_details=dict(
@@ -67,12 +75,14 @@ class NovelKeys(BaseScraper):
             '//label[@for="SingleOptionSelector-0"]'
         ).text == "Count"
     
-    @staticmethod
-    def _make_name(name, option, count):
-        if not count and option:
-            return f"{name} {option}"
-        else:
+    def _make_name(self, name, option, count):
+        if self.product.type == ProductType.stabilizer:
             return name
+        else:
+            if not count and option:
+                return f"{name} {option}"
+            else:
+                return name
 
     @CatchNoElem()
     def _get_options(self):
@@ -125,6 +135,8 @@ class NovelKeys(BaseScraper):
         if option and option.lower() == 'hotswap':
             return True
         else:
+            # TODO: fix(stale element reference: element is not attached to the page document)
+            #       use a retry() decorator?
             ps = self.driver.find_elements_by_tag_name("p")
             ps = [p.text for p in ps]
             return 'hotswap' in  " ".join(ps).split(" ")
@@ -135,3 +147,19 @@ class NovelKeys(BaseScraper):
             self.product.type == ProductType.kit):
                 return self._literal_to_enum(name)
         return None
+    
+    def _get_stabilizer_size(self, size):
+        # TODO: abstract logic to base class
+        if not self.product.type == ProductType.stabilzer:
+            return None
+        return {
+            "7u":SizeType.seven_u,
+            "2u":SizeType.two_u,
+            "6.25u":SizeType.six_point_25_u
+        }.get(size)
+
+
+    def _get_stabilizer_types(self):
+        if not self.product.type == ProductType.stabilizer:
+            return None
+        pass
