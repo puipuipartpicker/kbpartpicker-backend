@@ -17,7 +17,7 @@ class DatabaseAction():
         pv, pv_is_new = VendorProductAssociation.get_or_create(
             self.session,
             product_id=product.id,
-            vendor_id=pv_details.get('vendor')
+            vendor_id=pv_details.get('vendor_id')
         )
         # TODO: anyway to do these lines programmatically?
         product.img_url = product_details.get('img_url')

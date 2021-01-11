@@ -54,7 +54,7 @@ class NovelKeys(BaseScraper):
                 hotswap=self._is_hotswap(option)
             ),
             pv_details=dict(
-                vendor=self.vendor,
+                vendor_id=self.vendor.id,
                 price=self._get_price(option, count),
                 in_stock=self._get_availability(),
                 pv_url=pv_url
@@ -126,7 +126,8 @@ class NovelKeys(BaseScraper):
             return True
         else:
             ps = self.driver.find_elements_by_tag_name("p")
-            return 'hotswap' in  " ".join([p.text for p in ps]).split(" ")
+            ps = [p.text for p in ps]
+            return 'hotswap' in  " ".join(ps).split(" ")
     
     def _get_layout(self, name):
         if (self.product.type == ProductType.case or
