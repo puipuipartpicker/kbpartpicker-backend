@@ -35,11 +35,11 @@ nk_products = [
         type=ProductType.deskmat,
         remove=' Deskpad'
     ),
-    # Product(
-    #     url='miscellaneous',
-    #     type=ProductType.stabilizer,
-    #     include=['stabilizers']
-    # ),
+    Product(
+        url='miscellaneous',
+        type=ProductType.stabilizer,
+        include=['stabilizers']
+    ),
     Product(
         url='miscellaneous',
         type=ProductType.lube,

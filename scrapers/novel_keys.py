@@ -27,30 +27,32 @@ class NovelKeys(BaseScraper):
         super(NovelKeys, self).__init__(session, driver, product, name, url)
 
     def _get_variants(self, name):
-        options = self._get_options() # first item is title of Select (eg. Pick a Type)
-        options_are_count = self._are_options_count() 
         variants = []
-        if self.product.type == ProductType.stabilizer:
-            for o in options.options[1:]:
+        options = self._get_options()
+        if not options:
+            return [self._get_details(name)]
+
+        options_are_count = self._are_options_count()
+        if not options_are_count:
+            for o in options:
                 o.click()
-                stabilizer_types = self._get_options(1)
+                variants.append(self._get_details(name, o.text))
+            return variants
+        else:
+            options[0].click()  # only need the first option to calculate per item price
+            return [self._get_details(name, options[0].text, count=options_are_count)]
+
+        if self.product.type == ProductType.stabilizer:
+            stabilizer_types = self._get_options(1)
+            for o in options:
+                o.click()
                 if stabilizer_types:
-                    for t in stabilizer_types.options[1:]:
+                    for t in stabilizer_types:
                         t.click()
                         variants.append(self._get_details(name, o.text, t.text))
                 else:
                     variants.append(self._get_details(name, o.text))
-        elif options and not options_are_count:
-            for o in options.options[1:]:
-                o.click()    
-                variants.append(self._get_details(name, o.text))
-        elif options and options_are_count:
-            o = options.options[1]
-            o.click()
-            variants.append(self._get_details(name, o.text, count=options_are_count))
-        else:
-            variants = [self._get_details(name)]
-        return variants
+            return variants
 
     def _get_details(self, name, option=None, stab_type=None, count=False):
         product_details = dict()
@@ -94,7 +96,9 @@ class NovelKeys(BaseScraper):
 
     @CatchNoElem()
     def _get_options(self, dropdown_id=0):
-        return Select(self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}'))
+        return Select(
+            self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}')
+        ).options[1:]
     
     @CatchNoElem()
     def _get_price(self, count, is_count):

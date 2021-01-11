@@ -24,6 +24,8 @@ dailyclack
 prototypist
 """
 
+# TODO: Consider adding spring weight column
+
 class BaseScraper():
     
     def __init__(self, session, driver, product, name, url):
