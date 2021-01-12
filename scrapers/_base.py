@@ -12,16 +12,16 @@ from utils.regex_dict import RegexDict
 
 
 """
-novelkeys
-primekb
-thekey.company
-kbdfans
-kprepublic
-cannonkeys
-candykeys
-ilumkb
-dailyclack
-prototypist
+[-]novelkeys
+[ ]primekb
+[ ]thekey.company
+[ ]kbdfans
+[ ]kprepublic
+[ ]cannonkeys
+[ ]candykeys
+[ ]ilumkb
+[ ]dailyclack
+[ ]prototypist
 """
 
 # TODO: Consider adding spring weight column
