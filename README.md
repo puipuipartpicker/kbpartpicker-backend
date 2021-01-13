@@ -27,3 +27,7 @@ export TEST=1
 - Run `source config/.env` to export local environment variables.
 - Run `python scrape.py` to populate the database.
 - Run `gunicorn -b 127.0.0.1:5000 app:app` to start the server.
+
+
+### Notes
+- consider using poetry for managing dependencies
