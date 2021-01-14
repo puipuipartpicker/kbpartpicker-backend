@@ -1,7 +1,6 @@
 # https://medium.com/@mikelcbrowne/running-chromedriver-with-python-selenium-on-heroku-acc1566d161c
 import time
 import re
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.ui import WebDriverWait 
 from selenium.webdriver.support import expected_conditions as EC 
@@ -95,12 +94,6 @@ class NovelKeys(BaseScraper):
                 return name
 
     @CatchNoElem()
-    def _get_options(self, dropdown_id=0):
-        return Select(
-            self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}')
-        ).options[1:]
-    
-    @CatchNoElem()
     def _get_price(self, count, is_count):
         price_search = re.search(
             r"\d+.\d{1,2}$",
@@ -133,11 +126,6 @@ class NovelKeys(BaseScraper):
         img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "zoomImg")))
         return img.get_attribute("src")
     
-    def _get_pages(self):
-        pagination = self.driver.find_element_by_class_name("pagination")
-        pages = pagination.find_element_by_class_name("pagination__text").text
-        return re.findall(r"\d+", pages)
-
     def _cleanup_name(self, name):
         if self.product.remove:
             return re.sub(self.product.remove, '', name)
