@@ -17,7 +17,7 @@ from utils.regex_dict import RegexDict
 [ ]thekey.company
 [ ]kbdfans
 [ ]kprepublic
-[ ]cannonkeys
+[-]cannonkeys
 [ ]candykeys
 [ ]ilumkb
 [ ]dailyclack
