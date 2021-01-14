@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from app.models import Vendor
 from app.models.types import LayoutType
 from utils.regex_dict import RegexDict
+from utils.catch_noelem_exception import CatchNoElem
 
 
 """
