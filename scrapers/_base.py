@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC 
 
 from app.models import Vendor
-from app.models.types import LayoutType
+from app.models.types import LayoutType, ProductType
 from utils.regex_dict import RegexDict
 from utils.catch_noelem_exception import CatchNoElem
 
@@ -26,6 +26,7 @@ from utils.catch_noelem_exception import CatchNoElem
 """
 
 # TODO: Consider adding spring weight column
+# TODO: Refactor to match all child scrapers (add raise NotImplementedError)
 
 class BaseScraper():
     
@@ -89,18 +90,50 @@ class BaseScraper():
         for variant in variants:
             self.database_action.update_or_insert(**variant)
 
+    def _get_variants(self, name):
+        raise NotImplementedError
+
+    def _get_details(self, name, option=None, stab_type=None, count=False):
+        product_details = dict()
+        pv_details = dict()
+
+        product_details['name'] = self._make_name(self._cleanup_name(name), option, count)
+        product_details['product_type'] = self.product.type
+        product_details['img_url'] = self._get_img_url()
+        if self.product.type == ProductType.stabilizer:
+            product_details['size'] = self._get_stabilizer_size(option)
+            product_details['stabilizer_type'] = self._get_stabilizer_type(stab_type)
+        if self._product_with_layout():
+            product_details['layout'] = self._get_layout(name)
+        if self._hotswappable_product():
+            product_details['hotswap'] = self._is_hotswap(option)
+
+        pv_details['vendor_id'] = self.vendor.id
+        pv_details['price'] = self._get_price(option, count)
+        pv_details['in_stock'] = self._get_availability()
+        pv_details['pv_url'] = self.driver.current_url
+
+        return dict(
+            product_details=product_details,
+            pv_details=pv_details
+        )
+
     @CatchNoElem()
     def _get_options(self, dropdown_id=0):
         return Select(
             self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}')
         ).options[1:]
-    
-    
+
     def _get_cards(self):
         return self.driver.find_elements_by_class_name("grid-view-item__link")
     
     def _get_product_name(self):
         return self.driver.find_element_by_class_name("product-single__title").text
+
+    def _get_layout(self, name):
+        if self._product_with_layout:
+                return self._literal_to_enum(name)
+        return None
 
     @staticmethod
     def _literal_to_enum(literal):
@@ -114,3 +147,27 @@ class BaseScraper():
             return reg_dict[literal]
         except KeyError:
             return None
+
+    def _cleanup_name(self, name):
+        if self.product.remove:
+            return re.sub(self.product.remove, '', name)
+        return name
+
+    def _product_with_layout(self):
+        return (self.product.type == ProductType.case or
+                self.product.type == ProductType.pcb or
+                self.product.type == ProductType.kit)
+
+    def _hotswappable_product(self):
+        return (self.product.type == ProductType.pcb or
+                self.product.type == ProductType.kit)
+
+    @CatchNoElem(return_none=False)
+    def _get_img_url(self):
+        # container = self.driver.find_element_by_id("ProductSection-product-template")
+        # return container.find_elements_by_tag_name("img")[0].get_attribute("src")
+        timeout = 10
+        wait = WebDriverWait(self.driver, timeout)
+        img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "zoomImg")))
+        return img.get_attribute("src")
+    

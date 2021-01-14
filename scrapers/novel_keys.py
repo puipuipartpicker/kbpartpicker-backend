@@ -53,31 +53,6 @@ class NovelKeys(BaseScraper):
                     variants.append(self._get_details(name, o.text))
             return variants
 
-    def _get_details(self, name, option=None, stab_type=None, count=False):
-        product_details = dict()
-        pv_details = dict()
-
-        product_details['name'] = self._make_name(self._cleanup_name(name), option, count)
-        product_details['product_type'] = self.product.type
-        product_details['img_url'] = self._get_img_url()
-        if self.product.type == ProductType.stabilizer:
-            product_details['size'] = self._get_stabilizer_size(option)
-            product_details['stabilizer_type'] = self._get_stabilizer_type(stab_type)
-        if self._product_with_layout():
-            product_details['layout'] = self._get_layout(name)
-        if self._hotswappable_product():
-            product_details['hotswap'] = self._is_hotswap(option)
-
-        pv_details['vendor_id'] = self.vendor.id
-        pv_details['price'] = self._get_price(option, count)
-        pv_details['in_stock'] = self._get_availability()
-        pv_details['pv_url'] = self.driver.current_url
-
-        return dict(
-            product_details=product_details,
-            pv_details=pv_details
-        )
-    
     @CatchNoElem()
     def _are_options_count(self):
         return self.driver.find_element_by_xpath(
@@ -117,20 +92,6 @@ class NovelKeys(BaseScraper):
         elif availability == "ADD TO CART":
             return True
     
-    @CatchNoElem(return_none=False)
-    def _get_img_url(self):
-        # container = self.driver.find_element_by_id("ProductSection-product-template")
-        # return container.find_elements_by_tag_name("img")[0].get_attribute("src")
-        timeout = 10
-        wait = WebDriverWait(self.driver, timeout)
-        img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "zoomImg")))
-        return img.get_attribute("src")
-    
-    def _cleanup_name(self, name):
-        if self.product.remove:
-            return re.sub(self.product.remove, '', name)
-        return name
-
     def _is_hotswap(self, option):
         if option and option.lower() == 'hotswap':
             return True
@@ -141,11 +102,6 @@ class NovelKeys(BaseScraper):
             ps = [p.text for p in ps]
             return 'hotswap' in  " ".join(ps).split(" ")
     
-    def _get_layout(self, name):
-        if self._product_with_layout:
-                return self._literal_to_enum(name)
-        return None
-    
     def _get_stabilizer_size(self, size):
         # TODO: abstract logic to base class
         return {
@@ -154,19 +110,8 @@ class NovelKeys(BaseScraper):
             "6.25u":SizeType.six_point_25_u
         }.get(size)
 
-
     def _get_stabilizer_type(self, type_name):
         if not type_name:
             return None
         formatted = '_'.join(type_name.lower().split(' '))
         return StabilizerType[formatted]
-
-    def _product_with_layout(self):
-        return (self.product.type == ProductType.case or
-                self.product.type == ProductType.pcb or
-                self.product.type == ProductType.kit)
-    
-    def _hotswappable_product(self):
-        return (self.product.type == ProductType.pcb or
-                self.product.type == ProductType.kit)
-
