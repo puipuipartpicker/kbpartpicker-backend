@@ -3,7 +3,7 @@ import time
 from .database_action import DatabaseAction
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By 
-from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC 
 
 from app.models import Vendor
@@ -51,17 +51,14 @@ class BaseScraper():
         if page_nums:
             while page_nums[0] != page_nums[-1]:
                 self._scrape_each_on_page()
-                self._click_page()
+                self._click_next_page()
                 page_nums = self._get_pagination()
             self._scrape_each_on_page()
         else:
             self._scrape_each_on_page()
     
-    def _click_page(self):
-        (self.driver
-            .find_element_by_class_name("pagination")
-            .find_element_by_css_selector("a")
-            .click())
+    def _click_next_page(self):
+        self.driver.find_elements_by_css_selector(".pagination a")[-1].click()
 
     def _scrape_each_on_page(self):
         i = 0
@@ -73,12 +70,12 @@ class BaseScraper():
             self.driver.back() # return to list page
             i += 1
     
+    @CatchNoElem()
     def _get_pagination(self):
-        try:
-            return self._get_pages()
-        except NoSuchElementException:
-            return None
-    
+        # pagination = self.driver.find_element_by_class_name("pagination")
+        pages = self.driver.find_element_by_class_name("pagination__text").text
+        return re.findall(r"\d+", pages)
+
     def _scrape_and_insert(self):
         name = self._get_product_name()
         if self.product.ignore:
@@ -90,6 +87,13 @@ class BaseScraper():
         variants = self._get_variants(name)
         for variant in variants:
             self.database_action.update_or_insert(**variant)
+
+    @CatchNoElem()
+    def _get_options(self, dropdown_id=0):
+        return Select(
+            self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}')
+        ).options[1:]
+    
     
     def _get_cards(self):
         return self.driver.find_elements_by_class_name("grid-view-item__link")
