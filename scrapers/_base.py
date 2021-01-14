@@ -120,6 +120,8 @@ class BaseScraper():
 
     @CatchNoElem()
     def _get_options(self, dropdown_id=0):
+        # TODO: Refactor to select element by label name
+        #       to simplify logic in _get_variants
         return Select(
             self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}')
         ).options[1:]
@@ -132,7 +134,7 @@ class BaseScraper():
 
     def _get_layout(self, name):
         if self._product_with_layout:
-                return self._literal_to_enum(name)
+            return self._literal_to_enum(name)
         return None
 
     @staticmethod
