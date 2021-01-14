@@ -6,7 +6,7 @@ import re
 # from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
-# from app.models.types import ProductType, LayoutType, SizeType, StabilizerType
+from app.models.types import ProductType, LayoutType, SizeType, StabilizerType
 # from app.models import Product, Vendor, VendorProductAssociation
 # from utils.catch_noelem_exception import CatchNoElem
 # from utils.regex_dict import RegexDict
@@ -19,7 +19,7 @@ class CannonKeys(BaseScraper):
 
     def _get_variants(self, name):
         variants = []
-        options = self._get_options()
+        options = self._get_options(1)
         if not options:
             return [self._get_details(name)]
 
