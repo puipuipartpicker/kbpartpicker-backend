@@ -33,7 +33,7 @@ nk_products = [
     Product(
         url='deskpads',
         type=ProductType.deskmat,
-        remove=' Deskpad'
+        remove=r' Deskpad| Deskpads'
     ),
     Product(
         url='miscellaneous',

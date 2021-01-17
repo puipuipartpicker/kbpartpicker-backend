@@ -27,30 +27,42 @@ class NovelKeys(BaseScraper):
 
     def _get_variants(self, name):
         variants = []
-        options = self._get_options()
-        if not options:
+        drop_downs = self._get_options_and_type()
+        if not drop_downs:
             return [self._get_details(name)]
 
-        options_are_count = self._are_options_count()
-        if not options_are_count:
-            for o in options:
-                o.click()
-                variants.append(self._get_details(name, o.text))
-            return variants
-        else:
-            options[0].click()  # only need the first option to calculate per item price
-            return [self._get_details(name, options[0].text, count=options_are_count)]
+        count_options = drop_downs.get("Count")
+        type_options = (
+            drop_downs.get("Type") or
+            drop_downs.get("Kit") or
+            drop_downs.get("Color") or
+            drop_downs.get("Weight") or
+            (drop_downs.get("Style") if self.product.type != ProductType.stabilizer else None)
+        )
+        size_options = drop_downs.get("Size")
+        stab_type_options = drop_downs.get("Style")
 
-        if self.product.type == ProductType.stabilizer:
-            stabilizer_types = self._get_options(1)
-            for o in options:
-                o.click()
-                if stabilizer_types:
-                    for t in stabilizer_types:
-                        t.click()
-                        variants.append(self._get_details(name, o.text, t.text))
+        if count_options and not type_options:
+            count_options[0].click()  # only need the first option to calculate per item price
+            return [self._get_details(name, count_option=count_options[0].text)]
+        elif type_options:
+            for t in type_options:
+                t.click()
+                if count_options:
+                    count_options[0].click()
+                    variants.append(self._get_details(name, type_option=t.text, count_option=count_options[0].text))
                 else:
-                    variants.append(self._get_details(name, o.text))
+                    variants.append(self._get_details(name, type_option=t.text))
+            return variants
+        elif size_options:
+            for si in size_options:
+                si.click()
+                if stab_type_options:
+                    for st in stab_type_options:
+                        st.click()
+                        variants.append(self._get_details(name, stab_size=si.text, stab_type=st.text))
+                else:
+                    variants.append(self._get_details(name, stab_size=si.text))
             return variants
 
     @CatchNoElem()
@@ -59,17 +71,11 @@ class NovelKeys(BaseScraper):
             '//label[@for="SingleOptionSelector-0"]'
         ).text == "Count"
     
-    def _make_name(self, name, option, count):
-        if self.product.type == ProductType.stabilizer:
-            return name
-        else:
-            if not count and option:
-                return f"{name} {option}"
-            else:
-                return name
+    def _make_name(self, name, type_option):
+        return f"{name} {type_option}" if type_option else name
 
     @CatchNoElem()
-    def _get_price(self, count, is_count):
+    def _get_price(self, count):
         price_search = re.search(
             r"\d+.\d{1,2}$",
             self.driver.find_element_by_class_name("price-item").text
@@ -77,12 +83,10 @@ class NovelKeys(BaseScraper):
         if not price_search:
             return None
         price = float(price_search.group(0))
-        if self.product.type == ProductType.switch:
-            if is_count:
-                price = price / int(count)
-            return round(price * 10, 2)
-        else:
-            return price
+        if (self.product.type == ProductType.switch) and count:
+            price = price / (int(count) / 10)
+            # return round(price * 10, 2)
+        return round(price, 2)
     
     @CatchNoElem(return_none=False)
     def _get_availability(self):

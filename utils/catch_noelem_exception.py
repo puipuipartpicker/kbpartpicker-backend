@@ -13,6 +13,6 @@ def CatchNoElem(return_none=True):
             except NoSuchElementException:
                 if not return_none:
                     raise Exception("Can't get element for a required field")
-                return None
+                return None, None
         return _internal
     return _decorator

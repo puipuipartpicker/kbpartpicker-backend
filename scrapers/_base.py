@@ -93,23 +93,25 @@ class BaseScraper():
     def _get_variants(self, name):
         raise NotImplementedError
 
-    def _get_details(self, name, option=None, stab_type=None, count=False):
+    def _get_details(
+            self, name, type_option=None, count_option=None, stab_type=None, stab_size=None
+        ):
         product_details = dict()
         pv_details = dict()
 
-        product_details['name'] = self._make_name(self._cleanup_name(name), option, count)
+        product_details['name'] = self._make_name(self._cleanup_name(name), type_option)
         product_details['product_type'] = self.product.type
         product_details['img_url'] = self._get_img_url()
         if self.product.type == ProductType.stabilizer:
-            product_details['size'] = self._get_stabilizer_size(option)
+            product_details['size'] = self._get_stabilizer_size(stab_size)
             product_details['stabilizer_type'] = self._get_stabilizer_type(stab_type)
         if self._product_with_layout():
             product_details['layout'] = self._get_layout(name)
         if self._hotswappable_product():
-            product_details['hotswap'] = self._is_hotswap(option)
+            product_details['hotswap'] = self._is_hotswap(type_option)
 
         pv_details['vendor_id'] = self.vendor.id
-        pv_details['price'] = self._get_price(option, count)
+        pv_details['price'] = self._get_price(count_option)
         pv_details['in_stock'] = self._get_availability()
         pv_details['pv_url'] = self.driver.current_url
 
@@ -118,13 +120,22 @@ class BaseScraper():
             pv_details=pv_details
         )
 
-    @CatchNoElem()
-    def _get_options(self, dropdown_id=0):
-        # TODO: Refactor to select element by label name
-        #       to simplify logic in _get_variants
-        return Select(
-            self.driver.find_element_by_id(f'SingleOptionSelector-{dropdown_id}')
-        ).options[1:]
+    def _get_options_and_type(self):
+        drop_downs = dict()
+        options = self.driver.find_elements_by_class_name("single-option-selector")
+        if not options:
+            return None
+        for i, option in enumerate(options):
+            option_type = self.driver.find_element_by_xpath(
+                f'//label[@for="SingleOptionSelector-{i}"]'
+            ).text
+            drop_down_options = Select(option).options
+            drop_downs[option_type] = (
+                drop_down_options[1:]
+                if "pick a" in drop_down_options[0].text.lower()
+                else drop_down_options
+            )
+        return drop_downs
 
     def _get_cards(self):
         return self.driver.find_elements_by_class_name("grid-view-item__link")
