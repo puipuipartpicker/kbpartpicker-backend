@@ -65,12 +65,6 @@ class NovelKeys(BaseScraper):
                     variants.append(self._get_details(name, stab_size=si.text))
             return variants
 
-    @CatchNoElem()
-    def _are_options_count(self):
-        return self.driver.find_element_by_xpath(
-            '//label[@for="SingleOptionSelector-0"]'
-        ).text == "Count"
-    
     def _make_name(self, name, type_option):
         return f"{name} {type_option}" if type_option else name
 
@@ -96,7 +90,7 @@ class NovelKeys(BaseScraper):
         elif availability == "ADD TO CART":
             return True
     
-    def _is_hotswap(self, option):
+    def _get_hotswappability(self, option):
         if option and option.lower() == 'hotswap':
             return True
         else:

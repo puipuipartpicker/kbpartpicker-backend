@@ -108,7 +108,7 @@ class BaseScraper():
         if self._product_with_layout():
             product_details['layout'] = self._get_layout(name)
         if self._hotswappable_product():
-            product_details['hotswap'] = self._is_hotswap(type_option)
+            product_details['hotswap'] = self._get_hotswappability(type_option)
 
         pv_details['vendor_id'] = self.vendor.id
         pv_details['price'] = self._get_price(count_option)
@@ -183,4 +183,27 @@ class BaseScraper():
         wait = WebDriverWait(self.driver, timeout)
         img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "zoomImg")))
         return img.get_attribute("src")
-    
+
+    def _make_name(self, name, type_option):
+        raise NotImplementedError
+
+    def _get_price(self, count):
+        raise NotImplementedError
+
+    def _get_availability(self):
+        raise NotImplementedError
+
+    def _get_hotswappability(self, option):
+        raise NotImplementedError
+
+    def _get_stabilizer_size(self, size):
+        # TODO: abstract logic to base class
+        # return {
+        #     "7u":SizeType.seven_u,
+        #     "2u":SizeType.two_u,
+        #     "6.25u":SizeType.six_point_25_u
+        # }.get(size)
+        raise NotImplementedError
+
+    def _get_stabilizer_type(self, type_name):
+        raise NotImplementedError
