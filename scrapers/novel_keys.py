@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
-from app.models.types import ProductType, LayoutType, SizeType, StabilizerType
+from app.models.types import ProductType, KeyboardProfile, StabilizerSize, StabilizerType
 from app.models import Product, Vendor, VendorProductAssociation
 from utils.catch_noelem_exception import CatchNoElem
 from utils.regex_dict import RegexDict
@@ -78,9 +78,9 @@ class NovelKeys(BaseScraper):
     def _get_stabilizer_size(self, size):
         # TODO: abstract logic to base class
         return {
-            "7u":SizeType.seven_u,
-            "2u":SizeType.two_u,
-            "6.25u":SizeType.six_point_25_u
+            "7u":StabilizerSize.seven_u,
+            "2u":StabilizerSize.two_u,
+            "6.25u":StabilizerSize.six_point_25_u
         }.get(size)
 
     def _get_stabilizer_type(self, type_name):

@@ -1,12 +1,18 @@
-from .layout_type import LayoutType
+from .keyboard_profile import KeyboardProfile
+from .keyboard_layout import KeyboardLayout
 from .product_type import ProductType
-from .size_type import SizeType
+from .stabilizer_size import StabilizerSize
 from .stabilizer_type import StabilizerType
+from .switch_profile import SwitchProfile
+from .switch_type import SwitchType
 
 
 __all__ = [
-    "LayoutType",
+    "KeyboardProfile",
+    "KeyboardLayout",
     "ProductType",
-    "SizeType",
-    "StabilizerType"
+    "StabilizerSize",
+    "StabilizerType",
+    "SwitchProfile",
+    "SwitchType"
 ]

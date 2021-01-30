@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class LayoutType(Enum):
+class KeyboardProfile(Enum):
 
     forty_percent = 0
     sixty_percent = 1

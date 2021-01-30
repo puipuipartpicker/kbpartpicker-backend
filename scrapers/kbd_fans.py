@@ -6,7 +6,7 @@
 # from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
-# from app.models.types import ProductType, LayoutType, SizeType, StabilizerType
+# from app.models.types import ProductType, KeyboardProfile, StabilizerSize, StabilizerType
 # from app.models import Product, Vendor, VendorProductAssociation
 # from utils.catch_noelem_exception import CatchNoElem
 # from utils.regex_dict import RegexDict

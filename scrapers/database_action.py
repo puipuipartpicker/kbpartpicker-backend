@@ -1,5 +1,5 @@
 import re
-from app.models.types import ProductType, LayoutType, SizeType
+from app.models.types import ProductType, KeyboardProfile, StabilizerSize
 from app.models import Product, Vendor, VendorProductAssociation
 
 

@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC 
 
 from app.models import Vendor
-from app.models.types import LayoutType, ProductType
+from app.models.types import KeyboardProfile, ProductType
 from utils.regex_dict import RegexDict
 from utils.catch_noelem_exception import CatchNoElem
 
@@ -166,11 +166,11 @@ class BaseScraper():
     @staticmethod
     def _literal_to_enum(literal):
         reg_dict = RegexDict()
-        reg_dict[re.compile(r"4[0-9]|Forty", re.I)] = LayoutType.forty_percent
-        reg_dict[re.compile(r"60|Sixty", re.I)] = LayoutType.sixty_percent
-        reg_dict[re.compile(r"6[5-9]|Sixty-Five|Sixtyfive", re.I)] = LayoutType.sixtyfive_percent
-        reg_dict[re.compile(r"7[0-9]|Seventy-Five|Seventyfive", re.I)] = LayoutType.seventyfive_percent
-        reg_dict[re.compile(r"8[0-9]|TKL|Tenkeyless", re.I)] = LayoutType.tenkeyless
+        reg_dict[re.compile(r"4[0-9]|Forty", re.I)] = KeyboardProfile.forty_percent
+        reg_dict[re.compile(r"60|Sixty", re.I)] = KeyboardProfile.sixty_percent
+        reg_dict[re.compile(r"6[5-9]|Sixty-Five|Sixtyfive", re.I)] = KeyboardProfile.sixtyfive_percent
+        reg_dict[re.compile(r"7[0-9]|Seventy-Five|Seventyfive", re.I)] = KeyboardProfile.seventyfive_percent
+        reg_dict[re.compile(r"8[0-9]|TKL|Tenkeyless", re.I)] = KeyboardProfile.tenkeyless
         try:
             return reg_dict[literal]
         except KeyError:
@@ -216,9 +216,9 @@ class BaseScraper():
     def _get_stabilizer_size(self, size):
         # TODO: abstract logic to base class
         # return {
-        #     "7u":SizeType.seven_u,
-        #     "2u":SizeType.two_u,
-        #     "6.25u":SizeType.six_point_25_u
+        #     "7u":StabilizerSize.seven_u,
+        #     "2u":StabilizerSize.two_u,
+        #     "6.25u":StabilizerSize.six_point_25_u
         # }.get(size)
         raise NotImplementedError
 

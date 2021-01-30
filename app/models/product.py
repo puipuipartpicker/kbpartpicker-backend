@@ -2,7 +2,7 @@ import re
 from sqlalchemy.dialects.postgresql import ENUM as pgEnum
 from config.database import db
 from ._base import BaseModel
-from .types import ProductType, LayoutType, SizeType, StabilizerType
+from .types import ProductType, KeyboardProfile, StabilizerSize, StabilizerType
 
 class Product(BaseModel):
 
@@ -11,8 +11,8 @@ class Product(BaseModel):
     name = db.Column(db.String(), nullable=False)
     img_url = db.Column(db.String())
     product_type = db.Column(pgEnum(ProductType, name='product_type'))
-    size_type = db.Column(pgEnum(SizeType, name='size_type'))
-    layout_type = db.Column(pgEnum(LayoutType, name='layout_type'))
+    stabilizer_size = db.Column(pgEnum(StabilizerSize, name='stabilizer_size'))
+    keyboard_profile = db.Column(pgEnum(KeyboardProfile, name='keyboard_profile'))
     stabilizer_type = db.Column(pgEnum(StabilizerType, name='stabilizer_type'))
     hotswap = db.Column(db.Boolean)
 

@@ -35,7 +35,7 @@ def mock_update_or_insert(self, product_details, pv_details):
     if (product_details.get('product') == ProductType.pcb or
         product_details.get('product') == ProductType.kit or
         product_details.get('product') == ProductType.case):
-            assert product_details.get('layout_type') is not None
+            assert product_details.get('keyboard_profile') is not None
 
 @pytest.mark.parametrize("i", list(range(len(nk_vendor.products))), ids=[p.type.name for p in nk_vendor.products])
 def test_scrape(default_session, default_driver, i):
