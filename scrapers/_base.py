@@ -104,10 +104,10 @@ class BaseScraper():
         product_details['product_type'] = self.product.type
         product_details['img_url'] = self._get_img_url()
         if self.product.type == ProductType.stabilizer:
-            product_details['size'] = self._get_stabilizer_size(stab_size)
+            product_details['stabilizer_size'] = self._get_stabilizer_size(stab_size)
             product_details['stabilizer_type'] = self._get_stabilizer_type(stab_type)
         if self._product_with_layout():
-            product_details['layout'] = self._get_layout(name)
+            product_details['keyboard_profile'] = self._get_layout(name)
         if self._hotswappable_product():
             product_details['hotswap'] = self._get_hotswappability(type_option)
 
