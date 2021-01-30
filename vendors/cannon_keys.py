@@ -7,7 +7,7 @@ ck_products = [
         url='switches',
         type=ProductType.switch,
         ignore=[],
-        remove='\s*Switch\w*\s*\(?\d*\)?'
+        remove='\s*Switch\w*\s*\(?\d*\)?$'
     ),
     # Product(
     #     url='keycaps', 

@@ -1,5 +1,6 @@
 # import time
 import re
+from selenium.common.exceptions import NoSuchElementException
 # from selenium.webdriver.support.ui import Select
 # from selenium.webdriver.common.by import By 
 # from selenium.webdriver.support.ui import WebDriverWait 
@@ -16,13 +17,14 @@ class CannonKeys(BaseScraper):
 
     def __init__(self, session, driver, product, name, url):
         super(CannonKeys, self).__init__(session, driver, product, name, url)
+        self._img_class_name = "feature-row__image"
 
     def _get_variants(self, name):
         variants = []
         drop_downs = self._get_options_and_type()
         if not drop_downs:
             if self.product.type == ProductType.switch:
-                return [self._get_details(name, count_option=self._get_count())]
+                return [self._get_details(name, count_option=self._get_count(name))]
             return [self._get_details(name)]
 
         count_options = drop_downs.get("Quantity")
@@ -59,6 +61,13 @@ class CannonKeys(BaseScraper):
                     variants.append(self._get_details(name, stab_size=si.text))
             return variants
     
-    def _get_count(self):
-        p = self.driver.find_element_by_xpath('//p[@data-mce-fragment="1"]')
+    def _get_count(self, name):
+        # TODO: Refactor
+        count = re.search(r'\((\d+)\)', name)
+        if count:
+            return count.group(1)
+        try:
+            p = self.driver.find_element_by_xpath('//p[@data-mce-fragment="1"]')
+        except NoSuchElementException:
+            return None
         return re.search(r'[=:-]\s*(\d+)', p.text, re.I).group(1)
