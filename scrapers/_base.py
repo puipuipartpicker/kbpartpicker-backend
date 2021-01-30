@@ -1,5 +1,6 @@
 import re
 import time
+import inflect
 from .database_action import DatabaseAction
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By 
@@ -38,6 +39,7 @@ class BaseScraper():
         self.vendor, _ = Vendor.get_or_create(self.session, name=name, url=url)
         self.database_action = DatabaseAction(self.session)
         self._img_class_name = ""
+        self.inflect_engine = inflect.engine()
 
     def run(self):
         self.driver.get(f"{self.vendor_url}{self.product.url}")
@@ -95,7 +97,7 @@ class BaseScraper():
         raise NotImplementedError
 
     def _get_details(
-            self, name, type_option=None, count_option=None, stab_type=None, stab_size=None
+            self, name, type_option='', count_option=None, stab_type=None, stab_size=None
         ):
         product_details = dict()
         pv_details = dict()
@@ -198,7 +200,14 @@ class BaseScraper():
         img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'feature-row__image')))
         return img.get_attribute("src")
 
-    def _make_name(self, name, type_option):
+    def _make_name(self, name, type_option=''):
+        sing_name = self.inflect_engine.singular_noun(name)
+        sing_option = self.inflect_engine.singular_noun(type_option)
+        # False if n is singular, otherwise the singular of n
+        if sing_name:
+            name = sing_name
+        if sing_option:
+            type_option = sing_option
         return f"{name} {type_option}" if type_option else name
 
     @CatchNoElem(return_none=False)
