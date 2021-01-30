@@ -25,6 +25,7 @@ class DatabaseAction():
         product.stabilizer_type = product_details.get('stabilizer_type')
         product.keyboard_profile = product_details.get('keyboard_profile')
         product.hotswap = product_details.get('hotswap')
+        product.switch_type = product_details.get('switch_type')
         pv.price = pv_details.get('price')
         pv.in_stock = pv_details.get('in_stock')
         pv.url = pv_details.get('pv_url')

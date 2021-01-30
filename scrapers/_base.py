@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC 
 
 from app.models import Vendor
-from app.models.types import KeyboardProfile, ProductType
+from app.models.types import KeyboardProfile, ProductType, SwitchType
 from utils.regex_dict import RegexDict
 from utils.catch_noelem_exception import CatchNoElem
 
@@ -109,6 +109,7 @@ class BaseScraper():
         product_details['keyboard_profile'] = self._get_keyboard_profile(name)
         if self._hotswappable_product():
             product_details['hotswap'] = self._get_hotswappability(type_option)
+        product_details['switch_type'] = self._get_switch_type(type_option)
 
         pv_details['vendor_id'] = self.vendor.id
         pv_details['price'] = self._get_price(count_option)
@@ -223,3 +224,15 @@ class BaseScraper():
 
     def _get_stabilizer_type(self, type_name):
         raise NotImplementedError
+
+    def _get_switch_type(self):
+        # TODO: Implement behavior for when there are variants
+        rows = self.driver.find_elements_by_xpath("//table/tbody/tr")
+        switch_type = ""
+        for row in rows:
+            tds = row.find_elements_by_tag_name("td")
+            r_index = tds[0].text
+            if r_index == "Type":
+                switch_type = tds[1].text.lower()
+                break
+        return SwitchType[switch_type]
