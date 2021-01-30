@@ -24,7 +24,8 @@ class NovelKeys(BaseScraper):
 
     def __init__(self, session, driver, product, name, url):
         super(NovelKeys, self).__init__(session, driver, product, name, url)
-
+        self.img_class_name = "zoomImg"
+    
     def _get_variants(self, name):
         variants = []
         drop_downs = self._get_options_and_type()
@@ -65,31 +66,6 @@ class NovelKeys(BaseScraper):
                     variants.append(self._get_details(name, stab_size=si.text))
             return variants
 
-    def _make_name(self, name, type_option):
-        return f"{name} {type_option}" if type_option else name
-
-    @CatchNoElem()
-    def _get_price(self, count):
-        price_search = re.search(
-            r"\d+.\d{1,2}$",
-            self.driver.find_element_by_class_name("price-item").text
-        )
-        if not price_search:
-            return None
-        price = float(price_search.group(0))
-        if (self.product.type == ProductType.switch) and count:
-            price = price / (int(count) / 10)
-            # return round(price * 10, 2)
-        return round(price, 2)
-    
-    @CatchNoElem(return_none=False)
-    def _get_availability(self):
-        availability = self.driver.find_element_by_id('AddToCartText-product-template').text
-        if availability == "UNAVAILABLE" or availability == "SOLD OUT":
-            return False
-        elif availability == "ADD TO CART":
-            return True
-    
     def _get_hotswappability(self, option):
         if option and option.lower() == 'hotswap':
             return True

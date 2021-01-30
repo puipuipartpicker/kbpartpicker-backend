@@ -37,6 +37,7 @@ class BaseScraper():
         self.vendor_url = url
         self.vendor, _ = Vendor.get_or_create(self.session, name=name, url=url)
         self.database_action = DatabaseAction(self.session)
+        self._img_class_name = ""
 
     def run(self):
         self.driver.get(f"{self.vendor_url}{self.product.url}")
@@ -148,6 +149,20 @@ class BaseScraper():
             return self._literal_to_enum(name)
         return None
 
+    @CatchNoElem()
+    def _get_price(self, count):
+        price_search = re.search(
+            r"\d+.\d{1,2}$",
+            self.driver.find_element_by_class_name("price-item").text
+        )
+        if not price_search:
+            return None
+        price = float(price_search.group(0))
+        if (self.product.type == ProductType.switch) and count:
+            price = price / (int(count) / 10)
+            # return round(price * 10, 2)
+        return round(price, 2)
+    
     @staticmethod
     def _literal_to_enum(literal):
         reg_dict = RegexDict()
@@ -181,17 +196,19 @@ class BaseScraper():
         # return container.find_elements_by_tag_name("img")[0].get_attribute("src")
         timeout = 10
         wait = WebDriverWait(self.driver, timeout)
-        img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "zoomImg")))
+        img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, self._img_class_name)))
         return img.get_attribute("src")
 
     def _make_name(self, name, type_option):
-        raise NotImplementedError
+        return f"{name} {type_option}" if type_option else name
 
-    def _get_price(self, count):
-        raise NotImplementedError
-
+    @CatchNoElem(return_none=False)
     def _get_availability(self):
-        raise NotImplementedError
+        availability = self.driver.find_element_by_id('AddToCartText-product-template').text
+        if availability == "UNAVAILABLE" or availability == "SOLD OUT":
+            return False
+        elif availability == "ADD TO CART":
+            return True
 
     def _get_hotswappability(self, option):
         raise NotImplementedError
