@@ -82,7 +82,7 @@ class NovelKeys(BaseScraper):
         elif availability == "ADD TO CART":
             return True
     
-    def _is_hotswap(self, option):
+    def _get_hotswappability(self, option):
         if option and option.lower() == 'hotswap':
             return True
         else:
