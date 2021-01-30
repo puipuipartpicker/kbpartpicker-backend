@@ -148,6 +148,20 @@ class BaseScraper():
             return self._literal_to_enum(name)
         return None
 
+    @CatchNoElem()
+    def _get_price(self, count):
+        price_search = re.search(
+            r"\d+.\d{1,2}$",
+            self.driver.find_element_by_class_name("price-item").text
+        )
+        if not price_search:
+            return None
+        price = float(price_search.group(0))
+        if (self.product.type == ProductType.switch) and count:
+            price = price / (int(count) / 10)
+            # return round(price * 10, 2)
+        return round(price, 2)
+    
     @staticmethod
     def _literal_to_enum(literal):
         reg_dict = RegexDict()

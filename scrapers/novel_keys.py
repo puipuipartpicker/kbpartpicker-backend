@@ -74,20 +74,6 @@ class NovelKeys(BaseScraper):
     def _make_name(self, name, type_option):
         return f"{name} {type_option}" if type_option else name
 
-    @CatchNoElem()
-    def _get_price(self, count):
-        price_search = re.search(
-            r"\d+.\d{1,2}$",
-            self.driver.find_element_by_class_name("price-item").text
-        )
-        if not price_search:
-            return None
-        price = float(price_search.group(0))
-        if (self.product.type == ProductType.switch) and count:
-            price = price / (int(count) / 10)
-            # return round(price * 10, 2)
-        return round(price, 2)
-    
     @CatchNoElem(return_none=False)
     def _get_availability(self):
         availability = self.driver.find_element_by_id('AddToCartText-product-template').text
