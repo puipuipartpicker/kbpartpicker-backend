@@ -26,7 +26,7 @@ export TEST=1
 - run `pg_ctl -D /usr/local/var/postgres start` to start postgres server
 - Run `source config/.env` to export local environment variables.
 - Run `python scrape.py` to populate the database.
-- Run `gunicorn -b 127.0.0.1:5000 app:app` to start the server.
+- Run `python run.py` to start the server.
 
 
 ### Notes
