@@ -106,8 +106,7 @@ class BaseScraper():
         if self.product.type == ProductType.stabilizer:
             product_details['stabilizer_size'] = self._get_stabilizer_size(stab_size)
             product_details['stabilizer_type'] = self._get_stabilizer_type(stab_type)
-        if self._product_with_layout():
-            product_details['keyboard_profile'] = self._get_layout(name)
+        product_details['keyboard_profile'] = self._get_keyboard_profile(name)
         if self._hotswappable_product():
             product_details['hotswap'] = self._get_hotswappability(type_option)
 
@@ -144,8 +143,8 @@ class BaseScraper():
     def _get_product_name(self):
         return self.driver.find_element_by_class_name("product-single__title").text
 
-    def _get_layout(self, name):
-        if self._product_with_layout:
+    def _get_keyboard_profile(self, name):
+        if self._needs_keyboard_profile:
             return self._literal_to_enum(name)
         return None
 
@@ -181,7 +180,7 @@ class BaseScraper():
             return re.sub(self.product.remove, '', name)
         return name
 
-    def _product_with_layout(self):
+    def _needs_keyboard_profile(self):
         return (self.product.type == ProductType.case or
                 self.product.type == ProductType.pcb or
                 self.product.type == ProductType.kit)
