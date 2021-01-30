@@ -17,7 +17,6 @@ class CannonKeys(BaseScraper):
 
     def __init__(self, session, driver, product, name, url):
         super(CannonKeys, self).__init__(session, driver, product, name, url)
-        self._img_class_name = "feature-row__image"
 
     def _get_variants(self, name):
         variants = []

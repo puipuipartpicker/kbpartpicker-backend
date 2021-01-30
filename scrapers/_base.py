@@ -196,7 +196,7 @@ class BaseScraper():
         # return container.find_elements_by_tag_name("img")[0].get_attribute("src")
         timeout = 10
         wait = WebDriverWait(self.driver, timeout)
-        img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, self._img_class_name)))
+        img = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'feature-row__image')))
         return img.get_attribute("src")
 
     def _make_name(self, name, type_option):

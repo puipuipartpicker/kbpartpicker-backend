@@ -24,7 +24,6 @@ class NovelKeys(BaseScraper):
 
     def __init__(self, session, driver, product, name, url):
         super(NovelKeys, self).__init__(session, driver, product, name, url)
-        self.img_class_name = "zoomImg"
     
     def _get_variants(self, name):
         variants = []
