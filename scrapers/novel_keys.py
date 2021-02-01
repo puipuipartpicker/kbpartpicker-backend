@@ -1,12 +1,17 @@
 # https://medium.com/@mikelcbrowne/running-chromedriver-with-python-selenium-on-heroku-acc1566d161c
 import time
 import re
+import lxml.html
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.ui import WebDriverWait 
 from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
-from app.models.types import ProductType, KeyboardProfile, StabilizerSize, StabilizerType
+from app.models.types import (
+    ProductType, KeyboardProfile,
+    StabilizerSize, StabilizerType,
+    SwitchType
+)
 from app.models import Product, Vendor, VendorProductAssociation
 from utils.catch_noelem_exception import CatchNoElem
 from utils.regex_dict import RegexDict
@@ -88,3 +93,23 @@ class NovelKeys(BaseScraper):
             return None
         formatted = '_'.join(type_name.lower().split(' '))
         return StabilizerType[formatted]
+
+    def _get_switch_type(self, variant):
+        # TODO:cope with pages that haven't implemented specs in a table yet
+        # eg. https://novelkeys.xyz/collections/switches/products/box-crystal-switches
+        switch_types = [s.name for s in SwitchType]
+        buttons = self.driver.find_elements_by_class_name("accordion")
+        root = lxml.html.fromstring(self.driver.page_source)
+        index = 0
+        for i, button in enumerate(buttons):
+            if button.text.lower() == variant.lower():
+                index = i
+        tables = root.xpath('.//table')
+        if not tables:
+            return None
+        table = tables[index]
+        rows = table.xpath('.//tr')
+        for row in rows:
+            cell = row.xpath('.//td/text()')[0].lower()
+            if cell in switch_types:
+                return SwitchType[cell]

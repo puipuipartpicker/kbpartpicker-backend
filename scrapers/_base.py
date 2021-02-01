@@ -111,6 +111,7 @@ class BaseScraper():
         product_details['keyboard_profile'] = self._get_keyboard_profile(name)
         if self._hotswappable_product():
             product_details['hotswap'] = self._get_hotswappability(type_option)
+        product_details['switch_type'] = self._get_switch_type(type_option)
 
         pv_details['vendor_id'] = self.vendor.id
         pv_details['price'] = self._get_price(count_option)
@@ -231,4 +232,7 @@ class BaseScraper():
         raise NotImplementedError
 
     def _get_stabilizer_type(self, type_name):
+        raise NotImplementedError
+
+    def _get_switch_type(self, variant):
         raise NotImplementedError
