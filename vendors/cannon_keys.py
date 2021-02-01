@@ -30,11 +30,11 @@ ck_products = [
     #     type=ProductType.kit,
     #     include=['kit']
     # ),
-    # Product(
-    #     url='deskpads',
-    #     type=ProductType.deskmat,
-    #     remove=' Deskpad'
-    # ),
+    Product(
+        url='deskpads',
+        type=ProductType.deskmat,
+        remove=' Deskmat\w*|\[GB\] '
+    ),
     # Product(
     #     url='miscellaneous',
     #     type=ProductType.stabilizer,
