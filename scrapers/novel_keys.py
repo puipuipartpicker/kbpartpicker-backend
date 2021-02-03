@@ -97,19 +97,36 @@ class NovelKeys(BaseScraper):
     def _get_switch_type(self, variant):
         # TODO:cope with pages that haven't implemented specs in a table yet
         # eg. https://novelkeys.xyz/collections/switches/products/box-crystal-switches
-        switch_types = [s.name for s in SwitchType]
-        buttons = self.driver.find_elements_by_class_name("accordion")
+        if self.product.type != ProductType.switch:
+            return None
+
         root = lxml.html.fromstring(self.driver.page_source)
+
+        switch_types = [s.name for s in SwitchType]
+        tables = root.xpath('.//table')
+        if tables:
+            return self._get_switch_type_from_table(variant, tables, switch_types)
+        
+        div = self.driver.find_element_by_class_name("product-single__description")
+        lis = div.find_elements_by_tag_name("li")
+        if lis:
+            return self._get_switch_type_from_list(variant, lis, switch_types)
+
+    def _get_switch_type_from_table(self, variant, tables, switch_types):
+        buttons = self.driver.find_elements_by_class_name("accordion")
         index = 0
         for i, button in enumerate(buttons):
             if button.text.lower() == variant.lower():
                 index = i
-        tables = root.xpath('.//table')
-        if not tables:
-            return None
-        table = tables[index]
-        rows = table.xpath('.//tr')
+        rows = tables[index].xpath('.//tr')
         for row in rows:
             cell = row.xpath('.//td/text()')[0].lower()
             if cell in switch_types:
                 return SwitchType[cell]
+    
+    def _get_switch_type_from_list(self, variant, lis, switch_types):
+        for li in lis:
+            li_text = li.text.lower()
+            switch_type = list(filter(lambda t: t in li_text, switch_types))
+            if switch_type:
+                return SwitchType[switch_type.pop()]

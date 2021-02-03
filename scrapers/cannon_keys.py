@@ -70,3 +70,6 @@ class CannonKeys(BaseScraper):
         except NoSuchElementException:
             return None
         return re.search(r'[=:-]\s*(\d+)', p.text, re.I).group(1)
+
+    def _get_switch_type(variant):
+        pass

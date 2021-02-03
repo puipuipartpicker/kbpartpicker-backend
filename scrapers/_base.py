@@ -31,18 +31,18 @@ from utils.catch_noelem_exception import CatchNoElem
 
 class BaseScraper():
     
-    def __init__(self, session, driver, product, name, url):
+    def __init__(self, session, driver, product, name, vendor_url):
         self.session = session
         self.driver = driver
         self.product = product
-        self.vendor_url = url
-        self.vendor, _ = Vendor.get_or_create(self.session, name=name, url=url)
+        self.root_url = f"{vendor_url}{self.product.url}"
+        self.vendor, _ = Vendor.get_or_create(self.session, name=name, url=vendor_url)
         self.database_action = DatabaseAction(self.session)
         self._img_class_name = ""
         self.inflect_engine = inflect.engine()
 
     def run(self):
-        self.driver.get(f"{self.vendor_url}{self.product.url}")
+        self.driver.get(self.root_url)
         timeout = 3
         try:
             element_present = EC.presence_of_element_located((By.ID, "Collection"))
@@ -111,7 +111,7 @@ class BaseScraper():
         product_details['keyboard_profile'] = self._get_keyboard_profile(name)
         if self._hotswappable_product():
             product_details['hotswap'] = self._get_hotswappability(type_option)
-        product_details['switch_type'] = self._get_switch_type(type_option)
+        product_details['switch_type'] = self._get_switch_type(self._singularize(type_option))
 
         pv_details['vendor_id'] = self.vendor.id
         pv_details['price'] = self._get_price(count_option)
@@ -202,14 +202,14 @@ class BaseScraper():
         return img.get_attribute("src")
 
     def _make_name(self, name, type_option=''):
-        sing_name = self.inflect_engine.singular_noun(name)
-        sing_option = self.inflect_engine.singular_noun(type_option)
-        # False if n is singular, otherwise the singular of n
-        if sing_name:
-            name = sing_name
-        if sing_option:
-            type_option = sing_option
-        return f"{name} {type_option}" if type_option else name
+        return f"{self._singularize(name)} {self._singularize(type_option)}"
+
+    def _singularize(self, text):
+        sing_text = self.inflect_engine.singular_noun(text)
+        if sing_text:
+            return sing_text
+        else:
+            return text
 
     @CatchNoElem(return_none=False)
     def _get_availability(self):
