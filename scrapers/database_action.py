@@ -19,15 +19,7 @@ class DatabaseAction():
             product_id=product.id,
             vendor_id=pv_details.get('vendor_id')
         )
-        # TODO: anyway to do these lines programmatically?
-        product.img_url = product_details.get('img_url')
-        product.stabilizer_size= product_details.get('stabilizer_size')
-        product.stabilizer_type = product_details.get('stabilizer_type')
-        product.keyboard_profile = product_details.get('keyboard_profile')
-        product.hotswap = product_details.get('hotswap')
-        product.switch_type = product_details.get('switch_type')
-        pv.price = pv_details.get('price')
-        pv.in_stock = pv_details.get('in_stock')
-        pv.url = pv_details.get('pv_url')
+        product.populate(**product_details)
+        pv.populate(**pv_details)
         self.session.commit()
         print(product.name, pv.vendor.name, "insert" if p_is_new else "update")

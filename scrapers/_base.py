@@ -91,7 +91,7 @@ class BaseScraper():
                 return
         variants = self._get_variants(name)
         for variant in variants:
-            self.database_action.update_or_insert(**variant)
+            self.database_action.update_or_insert(*variant)
 
     def _get_variants(self, name):
         raise NotImplementedError
@@ -99,29 +99,23 @@ class BaseScraper():
     def _get_details(
             self, name, type_option='', count_option=None, stab_type=None, stab_size=None
         ):
-        product_details = dict()
-        pv_details = dict()
-
-        product_details['name'] = self._make_name(self._cleanup_name(name), type_option)
-        product_details['product_type'] = self.product.type
-        product_details['img_url'] = self._get_img_url()
-        if self.product.type == ProductType.stabilizer:
-            product_details['stabilizer_size'] = self._get_stabilizer_size(stab_size)
-            product_details['stabilizer_type'] = self._get_stabilizer_type(stab_type)
-        product_details['keyboard_profile'] = self._get_keyboard_profile(name)
-        if self._hotswappable_product():
-            product_details['hotswap'] = self._get_hotswappability(type_option)
-        product_details['switch_type'] = self._get_switch_type(self._singularize(type_option))
-
-        pv_details['vendor_id'] = self.vendor.id
-        pv_details['price'] = self._get_price(count_option)
-        pv_details['in_stock'] = self._get_availability()
-        pv_details['pv_url'] = self.driver.current_url
-
-        return dict(
-            product_details=product_details,
-            pv_details=pv_details
+        product_details = dict(
+            name=self._make_name(self._cleanup_name(name), type_option),
+            product_type=self.product.type,
+            img_url=self._get_img_url(),
+            stabilizer_size=self._get_stabilizer_size(stab_size),
+            stabilizer_type=self._get_stabilizer_type(stab_type),
+            keyboard_profile=self._get_keyboard_profile(name),
+            hotswap=self._get_hotswappability(type_option),
+            switch_type=self._get_switch_type(self._singularize(type_option))
         )
+        pv_details = dict(
+            vendor_id=self.vendor.id,
+            price=self._get_price(count_option),
+            in_stock=self._get_availability(),
+            url=self.driver.current_url
+        )
+        return product_details, pv_details
 
     def _get_options_and_type(self):
         drop_downs = dict()

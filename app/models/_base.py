@@ -38,3 +38,9 @@ class BaseModel(db.Model):
                     return query.one(), False
                 else:
                     raise e
+
+    def populate(self, **kwargs):
+        for key, val in kwargs.items():
+            if getattr(self, key):
+                continue
+            setattr(self, key, val)

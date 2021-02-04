@@ -71,6 +71,8 @@ class NovelKeys(BaseScraper):
             return variants
 
     def _get_hotswappability(self, option):
+        if not self._hotswappable_product():
+            return False
         if option and option.lower() == 'hotswap':
             return True
         else:
@@ -89,7 +91,7 @@ class NovelKeys(BaseScraper):
         }.get(size)
 
     def _get_stabilizer_type(self, type_name):
-        if not type_name:
+        if not (self.product.type != ProductType.stabilizer and type_name):
             return None
         formatted = '_'.join(type_name.lower().split(' '))
         return StabilizerType[formatted]

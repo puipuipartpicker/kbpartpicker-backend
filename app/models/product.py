@@ -21,14 +21,3 @@ class Product(BaseModel):
     switch_type = db.Column(pgEnum(SwitchType, name='switch_type'))
     switch_profile = db.Column(pgEnum(SwitchProfile, name='switch_profile'))
     hotswap = db.Column(db.Boolean)
-
-#     def cleanup_name(self):
-#         if self.type == ProductType.switch:
-#             self.name = re.sub(r' Switches', '', self.name)
-
-
-# def cleanup_name(mapper, connection, target):
-#     target.cleanup_name()
-
-
-# listen(Product, 'before_insert', cleanup_name)
