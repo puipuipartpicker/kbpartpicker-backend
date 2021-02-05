@@ -30,34 +30,28 @@ class NovelKeys(BaseScraper):
     def __init__(self, session, driver, product, name, url):
         super(NovelKeys, self).__init__(session, driver, product, name, url)
     
-    def _get_variants(self, name):
+    def _get_variant_fields(self, name):
         variants = []
         drop_downs = self._get_options_and_type()
         if not drop_downs:
-            return [self._get_details(name)]
+            return [{'name': name}]
 
         count_options = drop_downs.get("Count")
-        type_options = (
-            drop_downs.get("Type") or
-            drop_downs.get("Kit") or
-            drop_downs.get("Color") or
-            drop_downs.get("Weight") or
-            (drop_downs.get("Style") if self.product.type != ProductType.stabilizer else None)
-        )
+        type_options = self._get_type_options(drop_downs)
         size_options = drop_downs.get("Size")
         stab_type_options = drop_downs.get("Style")
 
         if count_options and not type_options:
             count_options[0].click()  # only need the first option to calculate per item price
-            return [self._get_details(name, count_option=count_options[0].text)]
+            return [{'name': name, 'count_option': count_options[0].text}]
         elif type_options:
             for t in type_options:
                 t.click()
                 if count_options:
                     count_options[0].click()
-                    variants.append(self._get_details(name, type_option=t.text, count_option=count_options[0].text))
+                    variants.append({'name': name, 'type_option': t.text, 'count_option': count_options[0].text})
                 else:
-                    variants.append(self._get_details(name, type_option=t.text))
+                    variants.append({'name': name, 'type_option': t.text})
             return variants
         elif size_options:
             for si in size_options:
@@ -65,10 +59,19 @@ class NovelKeys(BaseScraper):
                 if stab_type_options:
                     for st in stab_type_options:
                         st.click()
-                        variants.append(self._get_details(name, stab_size=si.text, stab_type=st.text))
+                        variants.append({'name': name, 'stab_size': si.text, 'stab_type': st.text})
                 else:
-                    variants.append(self._get_details(name, stab_size=si.text))
+                    variants.append({'name': name, 'stab_size': si.text})
             return variants
+
+    def _get_type_options(self, drop_downs):
+        return (
+            drop_downs.get("Type") or
+            drop_downs.get("Kit") or
+            drop_downs.get("Color") or
+            drop_downs.get("Weight") or
+            (drop_downs.get("Style") if self.product.type != ProductType.stabilizer else None)
+        )
 
     def _get_hotswappability(self, option):
         if not self._hotswappable_product():
@@ -81,14 +84,6 @@ class NovelKeys(BaseScraper):
             ps = self.driver.find_elements_by_tag_name("p")
             ps = [p.text for p in ps]
             return 'hotswap' in  " ".join(ps).split(" ")
-    
-    def _get_stabilizer_size(self, size):
-        # TODO: abstract logic to base class
-        return {
-            "7u":StabilizerSize.seven_u,
-            "2u":StabilizerSize.two_u,
-            "6.25u":StabilizerSize.six_point_25_u
-        }.get(size)
 
     def _get_stabilizer_type(self, type_name):
         if not (self.product.type != ProductType.stabilizer and type_name):
@@ -97,8 +92,6 @@ class NovelKeys(BaseScraper):
         return StabilizerType[formatted]
 
     def _get_switch_type(self, variant):
-        # TODO:cope with pages that haven't implemented specs in a table yet
-        # eg. https://novelkeys.xyz/collections/switches/products/box-crystal-switches
         if self.product.type != ProductType.switch:
             return None
 

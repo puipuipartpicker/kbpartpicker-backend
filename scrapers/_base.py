@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC 
 
 from app.models import Vendor
-from app.models.types import KeyboardProfile, ProductType
+from app.models.types import KeyboardProfile, ProductType, StabilizerSize
 from utils.regex_dict import RegexDict
 from utils.catch_noelem_exception import CatchNoElem
 
@@ -89,15 +89,16 @@ class BaseScraper():
         if self.product.include:
             if not set(self.product.include) & set(name.lower().split(' ')):  # include only products with words in name
                 return
-        variants = self._get_variants(name)
-        for variant in variants:
-            self.database_action.update_or_insert(*variant)
+        variant_fields = self._get_variant_fields(name)
+        for v in variant_fields:
+            details = self._get_details(**v)
+            self.database_action.update_or_insert(*details)
 
-    def _get_variants(self, name):
+    def _get_variant_fields(self, name):
         raise NotImplementedError
 
     def _get_details(
-            self, name, type_option='', count_option=None, stab_type=None, stab_size=None
+            self, name='', type_option='', count_option=None, stab_type=None, stab_size=None
         ):
         product_details = dict(
             name=self._make_name(self._cleanup_name(name), type_option),
@@ -175,7 +176,7 @@ class BaseScraper():
     def _cleanup_name(self, name):
         if self.product.remove:
             return re.sub(self.product.remove, '', name)
-        return name
+        return name.rstrip()
 
     def _needs_keyboard_profile(self):
         return (self.product.type == ProductType.case or
@@ -196,7 +197,9 @@ class BaseScraper():
         return img.get_attribute("src")
 
     def _make_name(self, name, type_option=''):
-        return f"{self._singularize(name)} {self._singularize(type_option)}"
+        return (
+            f"{self._singularize(name)} {self._singularize(type_option)}"
+        ).rstrip()
 
     def _singularize(self, text):
         sing_text = self.inflect_engine.singular_noun(text)
@@ -217,13 +220,13 @@ class BaseScraper():
         raise NotImplementedError
 
     def _get_stabilizer_size(self, size):
-        # TODO: abstract logic to base class
-        # return {
-        #     "7u":StabilizerSize.seven_u,
-        #     "2u":StabilizerSize.two_u,
-        #     "6.25u":StabilizerSize.six_point_25_u
-        # }.get(size)
-        raise NotImplementedError
+        if not (self.product.type != ProductType.stabilizer and size):
+            return None
+        return {
+            "7u":StabilizerSize.seven_u,
+            "2u":StabilizerSize.two_u,
+            "6.25u":StabilizerSize.six_point_25_u
+        }.get(size)
 
     def _get_stabilizer_type(self, type_name):
         raise NotImplementedError

@@ -7,7 +7,13 @@ from selenium.common.exceptions import NoSuchElementException
 # from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
-from app.models.types import ProductType, KeyboardProfile, StabilizerSize, StabilizerType
+from app.models.types import (
+    ProductType,
+    KeyboardProfile,
+    StabilizerSize,
+    StabilizerType,
+    SwitchType
+)
 # from app.models import Product, Vendor, VendorProductAssociation
 # from utils.catch_noelem_exception import CatchNoElem
 # from utils.regex_dict import RegexDict
@@ -18,17 +24,18 @@ class CannonKeys(BaseScraper):
     def __init__(self, session, driver, product, name, url):
         super(CannonKeys, self).__init__(session, driver, product, name, url)
 
-    def _get_variants(self, name):
+    def _get_variant_fields(self, name):
         variants = []
         drop_downs = self._get_options_and_type()
         if not drop_downs:
             if self.product.type == ProductType.switch:
-                return [self._get_details(name, count_option=self._get_count(name))]
-            return [self._get_details(name)]
+                return [{'name': name, 'count_option': self._get_count(name)}]
+            return [{'name': name}]
 
         count_options = drop_downs.get("Quantity")
         type_options = (
             drop_downs.get("Type") or
+            drop_downs.get("Deskmat") or
             drop_downs.get("Kit") or
             drop_downs.get("Color") or
             drop_downs.get("Weight") or
@@ -39,15 +46,15 @@ class CannonKeys(BaseScraper):
 
         if count_options and not type_options:
             count_options[0].click()  # only need the first option to calculate per item price
-            return [self._get_details(name, count_option=count_options[0].text)]
+            return [{'name': name, 'count_option': count_options[0].text}]
         elif type_options:
             for t in type_options:
                 t.click()
                 if count_options:
                     count_options[0].click()
-                    variants.append(self._get_details(name, type_option=t.text, count_option=count_options[0].text))
+                    variants.append({'name': name, 'type_option': t.text, 'count_option': count_options[0].text})
                 else:
-                    variants.append(self._get_details(name, type_option=t.text))
+                    variants.append({'name': name, 'type_option': t.text})
             return variants
         elif size_options:
             for si in size_options:
@@ -55,9 +62,9 @@ class CannonKeys(BaseScraper):
                 if stab_type_options:
                     for st in stab_type_options:
                         st.click()
-                        variants.append(self._get_details(name, stab_size=si.text, stab_type=st.text))
+                        variants.append({'name': name, 'stab_size': si.text, 'stab_type': st.text})
                 else:
-                    variants.append(self._get_details(name, stab_size=si.text))
+                    variants.append({'name': name, 'stab_size': si.text})
             return variants
     
     def _get_count(self, name):
@@ -71,5 +78,18 @@ class CannonKeys(BaseScraper):
             return None
         return re.search(r'[=:-]\s*(\d+)', p.text, re.I).group(1)
 
-    def _get_switch_type(variant):
+    def _get_switch_type(self, variant):
+        if self.product.type != ProductType.switch:
+            return None
+
+        switch_types = [s.name for s in SwitchType]
+        description = self.driver.find_element_by_class_name("product-single__description").text.lower()
+        switch_type = list(filter(lambda t: t in description, switch_types))
+        if switch_type:
+            return SwitchType[switch_type.pop()]
+
+    def _get_stabilizer_type(self, type_name):
+        pass
+
+    def _get_hotswappability(self, option):
         pass

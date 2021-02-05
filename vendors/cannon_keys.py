@@ -7,7 +7,7 @@ ck_products = [
         url='switches',
         type=ProductType.switch,
         ignore=[],
-        remove='\s*Switch\w*\s*\(?\d*\)?$'
+        remove='(Linear|Tactile|Clicky|Switch|\(\d*\))\s*'
     ),
     # Product(
     #     url='keycaps', 
@@ -31,7 +31,7 @@ ck_products = [
     #     include=['kit']
     # ),
     Product(
-        url='deskpads',
+        url='deskmats',
         type=ProductType.deskmat,
         remove=' Deskmat\w*|\[GB\] '
     ),

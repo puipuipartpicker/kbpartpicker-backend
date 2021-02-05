@@ -5,3 +5,4 @@ class KeyboardLayout(Enum):
 
     iso = 0
     ansi = 1
+    tsangan = 2
