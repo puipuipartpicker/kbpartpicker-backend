@@ -34,8 +34,8 @@ DROP TYPE IF EXISTS "public"."stabilizer_type";
 CREATE TYPE "public"."stabilizer_type" AS ENUM ('pcb_screw_in', 'pcb_snap_in', 'plate_mount');
 DROP TYPE IF EXISTS "public"."product_type";
 CREATE TYPE "public"."product_type" AS ENUM ('switch', 'case', 'pcb', 'plate', 'keyset', 'kit', 'stabilizer', 'lube', 'film', 'spring', 'tool', 'deskmat');
-DROP TYPE IF EXISTS "public"."keyboard_profile";
-CREATE TYPE "public"."keyboard_profile" AS ENUM ('frowless', 'forty_percent', 'sixty_percent', 'sixtyfive_percent', 'seventyfive_percent', 'tenkeyless', 'winkeyless', 'hhkb', 'full_size');
+DROP TYPE IF EXISTS "public"."keyboard_form_factor";
+CREATE TYPE "public"."keyboard_form_factor" AS ENUM ('frowless', 'forty_percent', 'sixty_percent', 'sixtyfive_percent', 'seventyfive_percent', 'tenkeyless', 'winkeyless', 'hhkb', 'full_size');
 DROP TYPE IF EXISTS "public"."stabilizer_size";
 CREATE TYPE "public"."stabilizer_size" AS ENUM ('six_point_25_u', 'seven_u', 'two_u');
 DROP TYPE IF EXISTS "public"."switch_profile";
@@ -55,7 +55,7 @@ CREATE TABLE "public"."products" (
     "updated_at" timestamp,
     "stabilizer_type" "public"."stabilizer_type",
     "product_type" "public"."product_type",
-    "keyboard_profile" "public"."keyboard_profile",
+    "keyboard_form_factor" "public"."keyboard_form_factor",
     "stabilizer_size" "public"."stabilizer_size",
     "switch_profile" "public"."switch_profile",
     "switch_type" "public"."switch_type",

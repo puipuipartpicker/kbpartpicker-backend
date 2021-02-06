@@ -1,4 +1,4 @@
-from .keyboard_profile import KeyboardProfile
+from .keyboard_form_factor import KeyboardFormFactor
 from .keyboard_layout import KeyboardLayout
 from .product_type import ProductType
 from .stabilizer_size import StabilizerSize
@@ -8,7 +8,7 @@ from .switch_type import SwitchType
 
 
 __all__ = [
-    "KeyboardProfile",
+    "KeyboardFormFactor",
     "KeyboardLayout",
     "ProductType",
     "StabilizerSize",

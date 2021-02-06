@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC 
 
 from app.models import Vendor
-from app.models.types import KeyboardProfile, ProductType, StabilizerSize
+from app.models.types import KeyboardFormFactor, ProductType, StabilizerSize, KeyboardLayout
 from utils.regex_dict import RegexDict
 from utils.catch_noelem_exception import CatchNoElem
 
@@ -67,7 +67,7 @@ class BaseScraper():
 
     def _scrape_each_on_page(self):
         i = 0
-        while i < len(self._get_cards()) - 1:
+        while i < len(self._get_cards()):
             card = self._get_cards()[i]
             card.click()
             time.sleep(1) # wait for product page to load
@@ -83,6 +83,7 @@ class BaseScraper():
 
     def _scrape_and_insert(self):
         name = self._get_product_name()
+        print(name)
         if self.product.ignore:
             if set(self.product.ignore) & set(name.lower().split(' ')):  # ignore products containing bad words
                 return
@@ -106,7 +107,8 @@ class BaseScraper():
             img_url=self._get_img_url(),
             stabilizer_size=self._get_stabilizer_size(stab_size),
             stabilizer_type=self._get_stabilizer_type(stab_type),
-            keyboard_profile=self._get_keyboard_profile(name),
+            keyboard_form_factor=self._get_keyboard_profile(name),
+            keyboard_layout=self._get_keyboard_layout(type_option),
             hotswap=self._get_hotswappability(type_option),
             switch_type=self._get_switch_type(self._singularize(type_option))
         )
@@ -142,8 +144,17 @@ class BaseScraper():
         return self.driver.find_element_by_class_name("product-single__title").text
 
     def _get_keyboard_profile(self, name):
-        if self._needs_keyboard_profile:
-            return self._literal_to_enum(name)
+        if not self._needs_keyboard_form_factor:
+            return None
+        return KeyboardFormFactor.get_from_literal(name)
+    
+    def _get_keyboard_layout(self, type_option):
+        if not self._needs_keyboard_form_factor():
+            return None
+        keyboard_layouts = [k.name for k in KeyboardLayout]
+        option_name = type_option.lower()
+        if option_name in keyboard_layouts:
+            return KeyboardLayout[option_name]
         return None
 
     @CatchNoElem()
@@ -160,25 +171,12 @@ class BaseScraper():
             # return round(price * 10, 2)
         return round(price, 2)
     
-    @staticmethod
-    def _literal_to_enum(literal):
-        reg_dict = RegexDict()
-        reg_dict[re.compile(r"4[0-9]|Forty", re.I)] = KeyboardProfile.forty_percent
-        reg_dict[re.compile(r"60|Sixty", re.I)] = KeyboardProfile.sixty_percent
-        reg_dict[re.compile(r"6[5-9]|Sixty-Five|Sixtyfive", re.I)] = KeyboardProfile.sixtyfive_percent
-        reg_dict[re.compile(r"7[0-9]|Seventy-Five|Seventyfive", re.I)] = KeyboardProfile.seventyfive_percent
-        reg_dict[re.compile(r"8[0-9]|TKL|Tenkeyless", re.I)] = KeyboardProfile.tenkeyless
-        try:
-            return reg_dict[literal]
-        except KeyError:
-            return None
-
     def _cleanup_name(self, name):
         if self.product.remove:
             return re.sub(self.product.remove, '', name)
         return name.rstrip()
 
-    def _needs_keyboard_profile(self):
+    def _needs_keyboard_form_factor(self):
         return (self.product.type == ProductType.case or
                 self.product.type == ProductType.pcb or
                 self.product.type == ProductType.kit)
@@ -217,7 +215,21 @@ class BaseScraper():
             return True
 
     def _get_hotswappability(self, option):
-        raise NotImplementedError
+        if not self._hotswappable_product():
+            return False
+        if option and option.lower() == 'hotswap':
+            return True
+        else:
+            # TODO: fix(stale element reference: element is not attached to the page document)
+            #       use a retry() decorator?
+            ps = self.driver.find_elements_by_tag_name("p")
+            ps = [p.text.lower() for p in ps]
+            lis = self.driver.find_elements_by_tag_name("li")
+            lis = [li.text.lower() for li in lis]
+            return any([
+                    'hotswap' in  " ".join(ps).split(" "),
+                    'hotswap' in  " ".join(lis).split(" "),
+                ])
 
     def _get_stabilizer_size(self, size):
         if not (self.product.type != ProductType.stabilizer and size):

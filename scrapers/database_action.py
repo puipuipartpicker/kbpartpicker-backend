@@ -1,5 +1,5 @@
 import re
-from app.models.types import ProductType, KeyboardProfile, StabilizerSize
+from app.models.types import ProductType, KeyboardFormFactor, StabilizerSize
 from app.models import Product, Vendor, VendorProductAssociation
 
 
@@ -22,4 +22,4 @@ class DatabaseAction():
         product.populate(**product_details)
         pv.populate(**pv_details)
         self.session.commit()
-        print(product.name, pv.vendor.name, "insert" if p_is_new else "update")
+        # print(product.name, pv.vendor.name, "insert" if p_is_new else "update")

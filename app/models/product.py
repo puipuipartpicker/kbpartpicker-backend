@@ -3,9 +3,9 @@ from sqlalchemy.dialects.postgresql import ENUM as pgEnum
 from config.database import db
 from ._base import BaseModel
 from .types import (
-    ProductType, KeyboardProfile,
+    ProductType, KeyboardFormFactor,
     StabilizerSize, StabilizerType,
-    SwitchType, SwitchProfile
+    SwitchType, SwitchProfile, KeyboardLayout
 )
 
 class Product(BaseModel):
@@ -16,7 +16,8 @@ class Product(BaseModel):
     img_url = db.Column(db.String())
     product_type = db.Column(pgEnum(ProductType, name='product_type'))
     stabilizer_size = db.Column(pgEnum(StabilizerSize, name='stabilizer_size'))
-    keyboard_profile = db.Column(pgEnum(KeyboardProfile, name='keyboard_profile'))
+    keyboard_form_factor = db.Column(pgEnum(KeyboardFormFactor, name='keyboard_form_factor'))
+    keyboard_layout = db.Column(pgEnum(KeyboardLayout, name='keyboard_layout'))
     stabilizer_type = db.Column(pgEnum(StabilizerType, name='stabilizer_type'))
     switch_type = db.Column(pgEnum(SwitchType, name='switch_type'))
     switch_profile = db.Column(pgEnum(SwitchProfile, name='switch_profile'))

@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from ._base import BaseScraper
 from app.models.types import (
-    ProductType, KeyboardProfile,
+    ProductType, KeyboardFormFactor,
     StabilizerSize, StabilizerType,
     SwitchType
 )

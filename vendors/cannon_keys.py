@@ -3,19 +3,19 @@ from .templates import Product, Vendor
 from scrapers.cannon_keys import CannonKeys
 
 ck_products = [
-    Product(
-        url='switches',
-        type=ProductType.switch,
-        ignore=[],
-        remove='(Linear|Tactile|Clicky|Switch|\(\d*\))\s*'
-    ),
+    # Product(
+    #     url='switches',
+    #     type=ProductType.switch,
+    #     ignore=[],
+    #     remove='(Linear|Tactile|Clicky|Switch|\(\d*\))\s*'
+    # ),
     # Product(
     #     url='keycaps', 
     #     type=ProductType.keyset,
     #     remove=r'( Keycaps| Keycap Set)'
     # ),
     # Product(
-    #     url='keyboards',
+    #     url='frontpage',
     #     type=ProductType.kit
     # ),
     # Product(
@@ -25,16 +25,16 @@ ck_products = [
     #     include=['pcb'],
     #     remove=' PCB'
     # ),
-    # Product(
-    #     url='diy-kits',
-    #     type=ProductType.kit,
-    #     include=['kit']
-    # ),
     Product(
-        url='deskmats',
-        type=ProductType.deskmat,
-        remove=' Deskmat\w*|\[GB\] '
+        url='pcbs',
+        type=ProductType.pcb,
+        remove=' PCB'
     ),
+    # Product(
+    #     url='deskmats',
+    #     type=ProductType.deskmat,
+    #     remove=' Deskmat\w*|\[GB\] '
+    # ),
     # Product(
     #     url='miscellaneous',
     #     type=ProductType.stabilizer,

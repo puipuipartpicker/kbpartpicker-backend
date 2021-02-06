@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 from ._base import BaseScraper
 from app.models.types import (
     ProductType,
-    KeyboardProfile,
+    KeyboardFormFactor,
     StabilizerSize,
     StabilizerType,
     SwitchType
@@ -36,6 +36,7 @@ class CannonKeys(BaseScraper):
         type_options = (
             drop_downs.get("Type") or
             drop_downs.get("Deskmat") or
+            drop_downs.get("Variant") or
             drop_downs.get("Kit") or
             drop_downs.get("Color") or
             drop_downs.get("Weight") or
@@ -89,7 +90,4 @@ class CannonKeys(BaseScraper):
             return SwitchType[switch_type.pop()]
 
     def _get_stabilizer_type(self, type_name):
-        pass
-
-    def _get_hotswappability(self, option):
         pass
