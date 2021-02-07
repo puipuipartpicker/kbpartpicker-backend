@@ -1,4 +1,5 @@
 import sys
+from enum import Enum
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import ClauseElement
 from config.database import db
@@ -44,3 +45,15 @@ class BaseModel(db.Model):
             if getattr(self, key):
                 continue
             setattr(self, key, val)
+
+    def to_dict(self):
+        res = dict()
+        for c in self.__table__.columns:
+            if c.name in ["created_at", "updated_at"]:
+                continue
+            val = getattr(self, c.name)
+            if val is not None:
+                if isinstance(val, Enum):
+                    val = val.name
+                res[c.name] = val
+        return res

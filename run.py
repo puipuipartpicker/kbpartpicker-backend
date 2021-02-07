@@ -18,22 +18,10 @@ def get():
         pvs = VendorProductAssociation.query.filter(
             VendorProductAssociation.product_id == product_id
         )
-        # pvs = session.query(VendorProductAssociation).filter(
-        #     VendorProductAssociation.product_id == product_id
-        # )
-        return jsonify(dict(
-            name=product.name,
-            img_url=product.img_url,
-            vendors=[
-                dict(
-                    name=pv.vendor.name,
-                    vendor_url=pv.vendor.url,
-                    product_url=pv.url,
-                    price=pv.price,
-                    in_stock=pv.in_stock
-                ) for pv in pvs
-            ]
-        ))
+        res = product.to_dict()
+        res["vendors"] = [pv.to_dict() for pv in pvs]
+        return jsonify(res)
+
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
