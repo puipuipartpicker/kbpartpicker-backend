@@ -83,7 +83,6 @@ class BaseScraper():
 
     def _scrape_and_insert(self):
         name = self._get_product_name()
-        print(name)
         if self.product.ignore:
             if set(self.product.ignore) & set(name.lower().split(' ')):  # ignore products containing bad words
                 return
@@ -195,9 +194,12 @@ class BaseScraper():
         return img.get_attribute("src")
 
     def _make_name(self, name, type_option=''):
-        return (
+        name = (
             f"{self._singularize(name)} {self._singularize(type_option)}"
         ).rstrip()
+        if self.product.type == ProductType.lube:
+            return self._get_lube_name(name)
+        return name
 
     def _singularize(self, text):
         sing_text = self.inflect_engine.singular_noun(text)
@@ -245,3 +247,11 @@ class BaseScraper():
 
     def _get_switch_type(self, variant):
         raise NotImplementedError
+
+    def _get_lube_name(self, name):
+        groups = re.search(r"(\d{3,})\s*g?(\d)?", name, re.I).groups()
+        if "krytox" in name.lower():
+            grade = f"g{groups[1]}" if groups[1] else ""
+            return f"Krytox {groups[0]}{grade}"
+        elif "tribosys" in name.lower():
+            return f"Tribosys {groups[0]}"

@@ -10,54 +10,42 @@ ck_products = [
     #     remove='(Linear|Tactile|Clicky|Switch|\(\d*\))\s*'
     # ),
     # Product(
-    #     url='keycaps', 
-    #     type=ProductType.keyset,
-    #     remove=r'( Keycaps| Keycap Set)'
-    # ),
-    # Product(
     #     url='frontpage',
     #     type=ProductType.kit
     # ),
     # Product(
-    #     url='diy-kits',
-    #     type=ProductType.pcb, 
-    #     ignore=['elite-c', 'proton'],
-    #     include=['pcb'],
+    #     url='pcbs',
+    #     type=ProductType.pcb,
     #     remove=' PCB'
     # ),
-    Product(
-        url='pcbs',
-        type=ProductType.pcb,
-        remove=' PCB'
-    ),
     # Product(
     #     url='deskmats',
     #     type=ProductType.deskmat,
     #     remove=' Deskmat\w*|\[GB\] '
     # ),
     # Product(
-    #     url='miscellaneous',
+    #     url='accessories',
     #     type=ProductType.stabilizer,
     #     include=['stabilizers']
     # ),
+    Product(
+        url='accessories',
+        type=ProductType.lube,
+        include=['lubricants'],
+        remove='Lubricants '
+    ),
     # Product(
-    #     url='miscellaneous',
-    #     type=ProductType.lube,
-    #     include=['lubricants'],
-    #     remove='Lubricants '
-    # ),
-    # Product(
-    #     url='miscellaneous',
+    #     url='accessories',
     #     type=ProductType.film,
     #     include=['films']
     # ),
     # Product(
-    #     url='miscellaneous',
+    #     url='accessories',
     #     type=ProductType.spring,
     #     include=['springs']
     # ),
     # Product(
-    #     url='miscellaneous',
+    #     url='accessories',
     #     type=ProductType.tool,
     #     include=['puller, opener']
 # )
