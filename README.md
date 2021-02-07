@@ -27,7 +27,7 @@ export TEST=1
 - Run `source config/.env` to export local environment variables.
 - Run `python scrape.py` to populate the database.
 - Run `python run.py` to start the server.
-- Run `psql -U $USER -d kbpartpicker -h localhost -p 5432 -f config/kbpartpicker.sql` to update the database.
+- Run `psql -U $USER -d kbpartpicker -h localhost -p 5432 -f config/database.sql` to update the database.
 
 
 ### Notes
