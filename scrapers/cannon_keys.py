@@ -21,8 +21,8 @@ from app.models.types import (
 
 class CannonKeys(BaseScraper):
 
-    def __init__(self, session, driver, product, name, url):
-        super(CannonKeys, self).__init__(session, driver, product, name, url)
+    def __init__(self, session, driver, ck_config):
+        super(CannonKeys, self).__init__(session, driver, ck_config)
 
     def _get_variant_fields(self, name):
         variants = []

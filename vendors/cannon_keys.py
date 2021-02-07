@@ -1,5 +1,5 @@
 from app.models.types import ProductType
-from .templates import Product, Vendor
+from .templates import Product, Vendor, Config
 from scrapers.cannon_keys import CannonKeys
 
 ck_products = [
@@ -53,7 +53,9 @@ ck_products = [
 
 ck_vendor = Vendor(
     scraper=CannonKeys,
-    name='Cannon Keys',
-    url="https://cannonkeys.com/collections/",
-    products=ck_products
+    config=Config(
+        name='Cannon Keys',
+        url="https://cannonkeys.com/collections/",
+        products=ck_products
+    )
 )

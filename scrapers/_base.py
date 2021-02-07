@@ -31,27 +31,27 @@ from utils.catch_noelem_exception import CatchNoElem
 
 class BaseScraper():
     
-    def __init__(self, session, driver, product, name, vendor_url):
+    def __init__(self, session, driver, vendor_config):
         self.session = session
         self.driver = driver
-        self.product = product
-        self.root_url = f"{vendor_url}{self.product.url}"
-        self.vendor, _ = Vendor.get_or_create(self.session, name=name, url=vendor_url)
+        self.vendor_config = vendor_config
+        self.vendor, _ = Vendor.get_or_create(self.session, name=vendor_config.name, url=vendor_config.url)
         self.database_action = DatabaseAction(self.session)
         self._img_class_name = ""
         self.inflect_engine = inflect.engine()
 
-    def run(self):
-        self.driver.get(self.root_url)
-        timeout = 3
-        try:
-            element_present = EC.presence_of_element_located((By.ID, "Collection"))
-            WebDriverWait(self.driver, timeout).until(element_present)
-        except TimeoutException:
-            print("Timed out waiting for page to load")
-        self._run()
+        for product in vendor_config.products:
+            self.product = product
+            self.driver.get(f"{vendor_config.url}{product.url}")
+            timeout = 3
+            try:
+                element_present = EC.presence_of_element_located((By.ID, "Collection"))
+                WebDriverWait(self.driver, timeout).until(element_present)
+            except TimeoutException:
+                print("Timed out waiting for page to load")
+            self.run()
 
-    def _run(self):
+    def run(self):
         page_nums = self._get_pagination()
         if page_nums:
             while page_nums[0] != page_nums[-1]:

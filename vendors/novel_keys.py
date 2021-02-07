@@ -1,5 +1,5 @@
 from app.models.types import ProductType
-from .templates import Product, Vendor
+from .templates import Product, Vendor, Config
 from scrapers.novel_keys import NovelKeys
 
 nk_products = [
@@ -65,7 +65,9 @@ nk_products = [
 
 nk_vendor = Vendor(
     scraper=NovelKeys,
-    name='NovelKeys',
-    url="https://novelkeys.xyz/collections/",
-    products=nk_products
+    config=Config(
+        name='NovelKeys',
+        url="https://novelkeys.xyz/collections/",
+        products=nk_products
+    )
 )

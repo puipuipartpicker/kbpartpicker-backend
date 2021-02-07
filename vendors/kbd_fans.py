@@ -1,5 +1,5 @@
 from app.models.types import ProductType
-from .templates import Product, Vendor
+from .templates import Product, Vendor, Config
 from scrapers.kbd_fans import KBDFans
 
 kf_products = [
@@ -65,7 +65,9 @@ kf_products = [
 
 kf_vendor = Vendor(
     scraper=KBDFans,
-    name='KBDFans',
-    url="https://kbdfans.com/collections/",
-    products=kf_products
+    config=Config(
+        name='KBDFans',
+        url="https://kbdfans.com/collections/",
+        products=kf_products
+    )
 )

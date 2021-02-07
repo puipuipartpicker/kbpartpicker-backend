@@ -27,8 +27,8 @@ TODO:
 
 class NovelKeys(BaseScraper):
 
-    def __init__(self, session, driver, product, name, url):
-        super(NovelKeys, self).__init__(session, driver, product, name, url)
+    def __init__(self, session, driver, nk_config):
+        super(NovelKeys, self).__init__(session, driver, nk_config)
     
     def _get_variant_fields(self, name):
         variants = []
