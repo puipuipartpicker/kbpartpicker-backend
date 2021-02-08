@@ -16,7 +16,7 @@ def get():
             VendorProductAssociation.product_id == product_id
         )
         res = product.to_dict()
-        res["vendors"] = [pv.to_dict() for pv in pvs]
+        res["vendors"] = [pv.to_dict(name=pv.vendor.name) for pv in pvs]
         return jsonify(res)
 
 

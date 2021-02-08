@@ -46,7 +46,7 @@ class BaseModel(db.Model):
                 continue
             setattr(self, key, val)
 
-    def to_dict(self):
+    def to_dict(self, **kwargs):
         res = dict()
         for c in self.__table__.columns:
             if c.name in ["created_at", "updated_at"]:
@@ -56,4 +56,7 @@ class BaseModel(db.Model):
                 if isinstance(val, Enum):
                     val = val.name
                 res[c.name] = val
+        if kwargs:
+            for key, val in kwargs.items():
+                res[key] = val
         return res
