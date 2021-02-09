@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request, jsonify
+from flask import request, jsonify
+from flask_api import FlaskAPI
 from flask_cors import CORS
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
@@ -14,7 +15,7 @@ from config.database import db
 
 
 def create_app():
-    app = Flask(__name__)
+    app = FlaskAPI(__name__)
     # Configurations
     app.config.from_object('setup')
     CORS(app)

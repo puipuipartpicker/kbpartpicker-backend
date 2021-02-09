@@ -21,6 +21,8 @@ selenium = "^3.141.0"
 urllib3 = "^1.26.3"
 WTForms = "^2.3.3"
 sanic = "^20.12.1"
+Flask-API = "^2.0"
+Flask-RESTful = "^0.3.8"
 
 [tool.poetry.dev-dependencies]
 pytest-sanic = "^1.6.2"

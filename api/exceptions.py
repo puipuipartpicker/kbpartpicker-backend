@@ -1,7 +1,8 @@
 from flask import jsonify
+from werkzeug.exceptions import HTTPException
 
 
-class APIException(Exception):
+class AppException(HTTPException):
 
     def __init__(self, message, status_code=None, payload=None):
         super().__init__(message)
@@ -16,13 +17,13 @@ class APIException(Exception):
         return rv
 
 
-class InvalidUsage(APIException):
+class InvalidUsage(AppException):
     status_code = 400
 
 
-class NotFound(APIException):
+class NotFound(AppException):
     status_code = 404
 
 
-class InternalServerError(APIException):
+class InternalServerError(AppException):
     status_code = 500

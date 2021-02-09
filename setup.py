@@ -10,6 +10,7 @@ SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 FLASK_ADMIN_SWATCH = 'cyborg'
 DATABASE_CONNECT_OPTIONS = {}
+TRAP_HTTP_EXCEPTIONS = True
 
 # Application threads. A common general assumption is
 # using 2 per available processor cores - to handle
