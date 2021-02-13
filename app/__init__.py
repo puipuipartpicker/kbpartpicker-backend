@@ -2,8 +2,6 @@ import os
 from flask import request, jsonify
 from flask_api import FlaskAPI
 from flask_cors import CORS
-from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from config.database import init_db, session
