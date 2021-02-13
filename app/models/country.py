@@ -1,12 +1,11 @@
 from ._base import BaseModel
-from config.database import db
+from sqlalchemy.schema import Column
+from sqlalchemy.types import Float, String
 
 class Country(BaseModel):
 
-    __tablename__ = 'countries'
-
-    country_name = db.Column(db.String(), nullable=False)
-    country_code = db.Column(db.String())
-    iso_code = db.Column(db.String())
-    currency_code = db.Column(db.String())
-    exchange_rate = db.Column(db.Float, nullable=False)
+    country_name = Column(String(), nullable=False)
+    country_code = Column(String())
+    iso_code = Column(String())
+    currency_code = Column(String())
+    exchange_rate = Column(Float, nullable=False)

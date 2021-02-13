@@ -1,21 +1,18 @@
 from ._base import BaseModel
-from config.database import db
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.schema import Column, ForeignKey
+from sqlalchemy.types import String, Boolean, Integer, Text, Float
 
 class VendorProductAssociation(BaseModel):
 
-    __tablename__ = 'vendor_product_associations'
-
-    product = db.relationship(
+    product = relationship(
         'Product', lazy='select',
-        backref=db.backref('vendor_product_associations'))
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
-    vendor = db.relationship(
+        backref=backref('vendor_product_associations'))
+    product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
+    vendor = relationship(
         'Vendor', lazy='select',
-        backref=db.backref('vendor_product_associations'))
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    price = db.Column(db.Float)
-    in_stock = db.Column(db.Boolean)
-    url = db.Column(db.Text)
-
-    # def update_or_insert(self, session, vendor):
-        
+        backref=backref('vendor_product_associations'))
+    vendor_id = Column(Integer, ForeignKey('vendors.id'), nullable=False)
+    price = Column(Float)
+    in_stock = Column(Boolean)
+    url = Column(Text)

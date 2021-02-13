@@ -6,8 +6,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask_migrate import Migrate
-from config.database import db
+from config.database import init_db, session
 
 
 # TODO Add authorization
@@ -21,12 +20,16 @@ def create_app():
     CORS(app)
     admin = Admin(app, name='kbpartpicker', template_mode='bootstrap3')
     from .models import Product, Vendor, Country, VendorProductAssociation
-    db.init_app(app)
-    admin.add_view(ModelView(Product, db.session))
-    admin.add_view(ModelView(Vendor, db.session))
-    admin.add_view(ModelView(Country, db.session))
-    # db.create_all()
-    Migrate(app, db)
+    init_db()
+    admin.add_view(ModelView(Product, session))
+    admin.add_view(ModelView(Vendor, session))
+    admin.add_view(ModelView(Country, session))
     return app
 
 app = create_app()
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    session.close()
+    session.remove()
+    

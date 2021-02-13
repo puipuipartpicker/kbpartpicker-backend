@@ -1,18 +1,24 @@
 import sys
 from enum import Enum
+from datetime import datetime
+from inflection import pluralize, underscore
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.sql.expression import ClauseElement
-from config.database import db
+from sqlalchemy.schema import Column
+from sqlalchemy.types import DateTime, BigInteger
 
 # Define a base model for other database tables to inherit
-class BaseModel(db.Model):
+class BaseModel:
 
-    __abstract__  = True
+    @declared_attr
+    def __tablename__(cls):
+        return pluralize(underscore(cls.__name__))
 
-    id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime,  default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime,  default=db.func.current_timestamp(),
-                                         onupdate=db.func.current_timestamp())
+    id = Column(BigInteger, primary_key=True)
+    created_at = Column(DateTime,  default=datetime.now())
+    updated_at = Column(DateTime,  default=datetime.now(),
+                                   onupdate=datetime.now())
 
     @classmethod
     def get_or_create(cls, session, **kwargs):
@@ -60,3 +66,6 @@ class BaseModel(db.Model):
             for key, val in kwargs.items():
                 res[key] = val
         return res
+
+
+BaseModel = declarative_base(cls=BaseModel)
