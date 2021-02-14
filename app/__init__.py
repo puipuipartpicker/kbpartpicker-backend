@@ -15,7 +15,7 @@ def create_app():
     app = FlaskAPI(__name__)
     # Configurations
     app.config.from_object('setup')
-    CORS(app)
+    CORS(app, support_credentials=True)
     admin = Admin(app, name='kbpartpicker', template_mode='bootstrap3')
     from .models import Product, Vendor, Country, VendorProductAssociation
     init_db()
