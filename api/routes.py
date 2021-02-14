@@ -15,6 +15,8 @@ def get():
         pvs = VendorProductAssociation.query.filter(
             VendorProductAssociation.product_id == product_id
         )
+        if not pvs:
+            raise NotFound(f"Vendors associated with product_id: {product_id} not found")
         res = product.to_dict()
         res["vendors"] = [pv.to_dict(name=pv.vendor.name) for pv in pvs]
         return jsonify(res)

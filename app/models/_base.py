@@ -3,12 +3,12 @@ from enum import Enum
 from datetime import datetime
 from inflection import pluralize, underscore
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base, declared_attr
 from sqlalchemy.sql.expression import ClauseElement
 from sqlalchemy.schema import Column
 from sqlalchemy.types import DateTime, BigInteger
 
-# Define a base model for other database tables to inherit
+
 class BaseModel:
 
     @declared_attr
@@ -66,6 +66,12 @@ class BaseModel:
             for key, val in kwargs.items():
                 res[key] = val
         return res
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.to_dict()}>"
+    
+    def __str__(self):
+        return f"{self.__class__.__name__}"
 
 
 BaseModel = declarative_base(cls=BaseModel)
