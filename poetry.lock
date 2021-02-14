@@ -365,8 +365,8 @@ locale = ["Babel (>=1.3)"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9"
-content-hash = "ab41a4e93f16291f8618fbad3f612e31a5e99f535564883cbffa86ad4566e639"
+python-versions = "^3.8"
+content-hash = "8edc123107be6fca7dc5da595799b5902daf3210103c80f4ed46618d59223048"
 
 [metadata.files]
 atomicwrites = [
