@@ -6,6 +6,7 @@ from app.models._base import BaseModel
 
 engine = create_engine(os.getenv("DATABASE_URL"))
 session = scoped_session(sessionmaker(bind=engine))
+session_maker = sessionmaker(bind=engine)
 
 
 def init_db():
