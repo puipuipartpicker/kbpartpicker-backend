@@ -4,10 +4,11 @@
 -- https://tableplus.com/
 --
 -- Database: kbpartpicker
--- Generation Time: 2021-01-30 20:45:49.9880
+-- Generation Time: 2021-02-14 18:28:07.0900
 -- -------------------------------------------------------------
 
 
+DROP TABLE IF EXISTS "public"."countries";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 
 -- Sequence and defined type
@@ -26,6 +27,7 @@ CREATE TABLE "public"."countries" (
     PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "public"."products";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 
 -- Sequence and defined type
@@ -35,7 +37,7 @@ CREATE TYPE "public"."stabilizer_type" AS ENUM ('pcb_screw_in', 'pcb_snap_in', '
 DROP TYPE IF EXISTS "public"."product_type";
 CREATE TYPE "public"."product_type" AS ENUM ('switch', 'case', 'pcb', 'plate', 'keyset', 'kit', 'stabilizer', 'lube', 'film', 'spring', 'tool', 'deskmat');
 DROP TYPE IF EXISTS "public"."keyboard_form_factor";
-CREATE TYPE "public"."keyboard_form_factor" AS ENUM ('frowless', 'forty_percent', 'sixty_percent', 'sixtyfive_percent', 'seventyfive_percent', 'tenkeyless', 'winkeyless', 'hhkb', 'full_size');
+CREATE TYPE "public"."keyboard_form_factor" AS ENUM ('forty_percent', 'sixty_percent', 'sixtyfive_percent', 'seventyfive_percent', 'tenkeyless', 'winkeyless', 'hhkb', 'full_size', 'frowless');
 DROP TYPE IF EXISTS "public"."stabilizer_size";
 CREATE TYPE "public"."stabilizer_size" AS ENUM ('six_point_25_u', 'seven_u', 'two_u');
 DROP TYPE IF EXISTS "public"."switch_profile";
@@ -43,7 +45,7 @@ CREATE TYPE "public"."switch_profile" AS ENUM ('medium', 'low', 'high');
 DROP TYPE IF EXISTS "public"."switch_type";
 CREATE TYPE "public"."switch_type" AS ENUM ('linear', 'tactile', 'clicky');
 DROP TYPE IF EXISTS "public"."keyboard_layout";
-CREATE TYPE "public"."keyboard_layout" AS ENUM ('iso', 'ansi');
+CREATE TYPE "public"."keyboard_layout" AS ENUM ('iso', 'ansi', 'tsangan');
 
 -- Table Definition
 CREATE TABLE "public"."products" (
@@ -63,6 +65,7 @@ CREATE TABLE "public"."products" (
     PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "public"."vendor_product_associations";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 
 -- Sequence and defined type
@@ -81,6 +84,7 @@ CREATE TABLE "public"."vendor_product_associations" (
     PRIMARY KEY ("id")
 );
 
+DROP TABLE IF EXISTS "public"."vendors";
 -- This script only contains the table creation statements and does not fully represent the table in the database. It's still missing: indices, triggers. Do not use it as a backup.
 
 -- Sequence and defined type
@@ -98,8 +102,8 @@ CREATE TABLE "public"."vendors" (
 );
 
 ALTER TABLE "public"."vendor_product_associations" ADD FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id");
-ALTER TABLE "public"."vendor_product_associations" ADD FOREIGN KEY ("product_id") REFERENCES "public"."products"("id");
-ALTER TABLE "public"."vendor_product_associations" ADD FOREIGN KEY ("product_id") REFERENCES "public"."products"("id");
 ALTER TABLE "public"."vendor_product_associations" ADD FOREIGN KEY ("vendor_id") REFERENCES "public"."vendors"("id");
+ALTER TABLE "public"."vendor_product_associations" ADD FOREIGN KEY ("product_id") REFERENCES "public"."products"("id");
+ALTER TABLE "public"."vendor_product_associations" ADD FOREIGN KEY ("product_id") REFERENCES "public"."products"("id");
 ALTER TABLE "public"."vendors" ADD FOREIGN KEY ("country_id") REFERENCES "public"."countries"("id");
 ALTER TABLE "public"."vendors" ADD FOREIGN KEY ("country_id") REFERENCES "public"."countries"("id");

@@ -15,7 +15,7 @@ createdb -h localhost -p 5432 -U {username} kbpartpicker
 https://chromedriver.chromium.org/downloads
 - Install python dependencies (Be sure to use python 3)
 ```
-pip install -r requirements.txt
+poetry install
 ```
 - Create a `.env` file inside the `config` directory with the following as its contents, and replace username with the username you used to create the database
 ```
@@ -27,7 +27,7 @@ export TEST=1
 - Run `source config/.env` to export local environment variables.
 - Run `python scrape.py` to populate the database.
 - Run `python run.py` to start the server.
-- Run `psql -U $USER -d kbpartpicker -h localhost -p 5432 -f config/database.sql` to update the database.
+- Run `psql -U $USER -d kbpartpicker -h localhost -p 5432 -f config/kbpartpicker.sql` to update the database.
 
 
 ### Notes
