@@ -23,12 +23,8 @@ export DATABASE_URL=postgres+psycopg2://{username}:password@localhost:5432/kbpar
 export MODE=dev
 export TEST=1
 ```
-- run `pg_ctl -D /usr/local/var/postgres start` to start postgres server
+- Run `pg_ctl -D /usr/local/var/postgres start` to start postgres server
 - Run `source config/.env` to export local environment variables.
 - Run `python scrape.py` to populate the database.
 - Run `python run.py` to start the server.
 - Run `psql -U $USER -d kbpartpicker -h localhost -p 5432 -f config/kbpartpicker.sql` to update the database.
-
-
-### Notes
-- consider using poetry for managing dependencies
