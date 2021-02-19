@@ -1,11 +1,28 @@
-FROM python:3.8-slim
+FROM python:3.8
+
+# Adding trusting keys to apt for repositories
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+
+# Adding Google Chrome to the repositories
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 
 RUN apt-get update && apt-get -y install \
-    git openssh-server curl
+    git openssh-server curl google-chrome-stable
 
-ARG DEPLOY_KEY
+# Installing Unzip
+RUN apt-get install -yqq unzip
+
+# Download the Chrome Driver
+RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+
+# Unzip the Chrome Driver into /usr/local/bin directory
+RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
+EXPOSE 5000
 
 ENV \
+  DATABASE_URL="postgresql+psycopg2://kbpp:password@db:5432/kbpartpicker" \
+  DISPLAY=:99 \
   # python:
   PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
@@ -35,7 +52,7 @@ COPY pyproject.toml poetry.lock /tmp/
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction --no-ansi
 
-ARG APP_HOME=/opt/backend
+ARG APP_HOME=/api
 RUN apt-get update && \
     apt-get -y install \
         curl bash \
@@ -48,4 +65,5 @@ RUN apt-get update && \
 WORKDIR $APP_HOME
 COPY --chown=kbpp:kbpp . .
 USER kbpp
-ENTRYPOINT python run.py
+# RUN python scrape.py
+# ENTRYPOINT python run.py

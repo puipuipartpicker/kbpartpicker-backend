@@ -27,3 +27,6 @@ CSRF_SESSION_KEY = "secret"
 
 # Secret key for signing cookies
 SECRET_KEY = "secret"
+
+# 
+CORS_HEADERS = 'Content-Type'

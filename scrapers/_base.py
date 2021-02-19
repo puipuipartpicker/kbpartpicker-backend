@@ -41,6 +41,7 @@ class BaseScraper():
         self.inflect_engine = inflect.engine()
 
         for product in vendor_config.products:
+            print(f"Scraping products of type {product.type.name} from {vendor_config.name}")
             self.product = product
             self.driver.get(f"{vendor_config.url}{product.url}")
             timeout = 3

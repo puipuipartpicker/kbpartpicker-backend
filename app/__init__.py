@@ -15,7 +15,8 @@ def create_app():
     app = FlaskAPI(__name__)
     # Configurations
     app.config.from_object('setup')
-    CORS(app, support_credentials=True)
+    # CORS(app, support_credentials=True, resources={r"/*": {"origins": "*"}})
+    CORS(app, resources={r"/*"}, origins=["*"], support_credentials=True)
     admin = Admin(app, name='kbpartpicker', template_mode='bootstrap3')
     from .models import Product, Vendor, Country, VendorProductAssociation
     init_db()
@@ -30,4 +31,3 @@ app = create_app()
 def shutdown_session(exception=None):
     session.close()
     session.remove()
-    

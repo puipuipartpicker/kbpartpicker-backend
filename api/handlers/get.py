@@ -1,11 +1,13 @@
 import os
 from flask import request, jsonify
+from flask_cors import cross_origin
 
 from api.exceptions import *
 from app.models import Product, VendorProductAssociation
 from app.models.types import ProductType
 
 
+# @cross_origin(supports_credentials=True)
 def get(product_id):
     if request.method != "GET":
         raise MethodNotAllowed(request.method)

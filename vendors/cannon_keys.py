@@ -3,26 +3,26 @@ from .templates import Product, Vendor, Config
 from scrapers.cannon_keys import CannonKeys
 
 ck_products = [
-    # Product(
-    #     url='switches',
-    #     type=ProductType.switch,
-    #     ignore=[],
-    #     remove='(Linear|Tactile|Clicky|Switch|\(\d*\))\s*'
-    # ),
-    # Product(
-    #     url='frontpage',
-    #     type=ProductType.kit
-    # ),
-    # Product(
-    #     url='pcbs',
-    #     type=ProductType.pcb,
-    #     remove=' PCB'
-    # ),
-    # Product(
-    #     url='deskmats',
-    #     type=ProductType.deskmat,
-    #     remove=' Deskmat\w*|\[GB\] '
-    # ),
+    Product(
+        url='switches',
+        type=ProductType.switch,
+        ignore=[],
+        remove='(Linear|Tactile|Clicky|Switch|\(\d*\))\s*'
+    ),
+    Product(
+        url='frontpage',
+        type=ProductType.kit
+    ),
+    Product(
+        url='pcbs',
+        type=ProductType.pcb,
+        remove=' PCB'
+    ),
+    Product(
+        url='deskmats',
+        type=ProductType.deskmat,
+        remove=' Deskmat\w*|\[GB\] '
+    ),
     # Product(
     #     url='accessories',
     #     type=ProductType.stabilizer,

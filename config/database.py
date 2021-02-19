@@ -11,4 +11,4 @@ session_maker = sessionmaker(bind=engine)
 
 def init_db():
     BaseModel.query = session.query_property()
-    # BaseModel.metadata.create_all(bind=engine)
+    BaseModel.metadata.create_all(bind=engine)
