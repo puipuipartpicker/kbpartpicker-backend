@@ -19,7 +19,13 @@ poetry install
 ```
 - Create a `.env` file inside the `config` directory with the following as its contents, and replace username with the username you used to create the database
 ```
-export DATABASE_URL=postgres+psycopg2://{username}:password@localhost:5432/kbpartpicker
+DB_USERNAME=kbpp
+DB_PASSWORD=password
+DB_HOST=db
+DB_NAME=kbpartpicker
+DB_PORT=5432
+DATABASE_URL=postgres+psycopg2://kbpp:password@db:5432/kbpartpicker
+export DATABASE_URL=postgres+psycopg2://kbpp:password@db:5432/kbpartpicker
 export MODE=dev
 export TEST=1
 ```
