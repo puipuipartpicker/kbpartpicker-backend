@@ -31,6 +31,11 @@ class NotFound(AppException):
         target = target_class.__name__
         if target == "VendorProductAssociation":
             return f"Couldn't find any vendors associated with product_id: {target_id}"
+        if type(target_id) == list:
+            if len(target_id) > 1:
+                return f"{target} not found for ids: {target_id}"
+            else:
+                target_id = target_id.pop()
         return f"{target} not found for id: {target_id}"
 
 
