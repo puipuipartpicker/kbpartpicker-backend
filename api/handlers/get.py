@@ -34,7 +34,10 @@ def get(product_ids):
         raise NotFound(Product, product_ids)
     if missing_product_ids := set(product_ids) - set([p.id for p in products]):
         results.append(
-            {"message": f"Products not found for ids: {list(missing_product_ids)}"}
+            {
+                "message": f"Products not found for these ids",
+                "ids": list(missing_product_ids)
+            }
         )
     if len(results) == 1:
         return jsonify(results.pop())
