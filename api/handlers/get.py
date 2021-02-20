@@ -13,9 +13,9 @@ logger = logging.getLogger('gunicorn.error')
 def get(product_ids):
     if request.method != "GET":
         raise MethodNotAllowed(request.method)
-    if not product_ids or not type(product_ids) == list:
+    if not product_ids:
         raise InvalidUsage(
-            "Please provide a list of product ids in the request parameters"
+            "Please provide a product_id in the request parameter."
         )
     products = Product.query.filter(
         Product.id.in_(product_ids)
