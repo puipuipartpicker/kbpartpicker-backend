@@ -8,8 +8,10 @@ from config.driver import driver_maker
 
 
 def updated_today():
-    last_product = Product.query.order_by(Product.updated_at.desc()).first()
-    return last_product.updated_at.date() == date.today()
+    if last_product := Product.query.order_by(Product.updated_at.desc()).first():
+        return last_product.updated_at.date() == date.today()
+    else:
+        return False
 
 
 def main(session, driver):
