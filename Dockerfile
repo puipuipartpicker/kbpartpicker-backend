@@ -61,7 +61,7 @@ RUN apt-get update && \
     chown -R kbpp:kbpp $APP_HOME/
 
 WORKDIR $APP_HOME
-# COPY --chown=kbpp:kbpp . .
+COPY --chown=kbpp:kbpp . .
 USER kbpp
 # RUN python scrape.py
 # ENTRYPOINT python run.py
