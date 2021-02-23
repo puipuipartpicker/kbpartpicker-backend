@@ -19,7 +19,6 @@ RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`cu
 RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 
 ENV \
-  DATABASE_URL="postgresql+psycopg2://kbpp:password@db:5432/kbpartpicker" \
   DISPLAY=:99 \
   # python:
   PYTHONFAULTHANDLER=1 \
