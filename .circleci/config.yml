@@ -13,6 +13,7 @@ executors:
           DB_USERNAME: kbpp
           DB_PASSWORD: kbpp
       - image: circleci/postgres:9.6.5-alpine-ram
+        environment:
           DB_DATABASE: kbpartpicker
           DB_HOST: "127.0.0.1"
           DB_USERNAME: kbpp
