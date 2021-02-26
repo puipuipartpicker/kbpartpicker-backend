@@ -19,14 +19,32 @@ executors:
           DB_USERNAME: kbpp
           DB_PASSWORD: kbpp
 
+commands:
+  poetry_install:
+    description: "Execute dependencies install"
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "25:5e:16:b7:cb:89:b4:7b:aa:a7:0d:3f:d8:8e:d7:56"
+      - restore_cache:
+          keys:
+            - deps-{{ checksum "poetry.lock" }}
+      - run:
+          command: |
+            python -m venv .venv
+            poetry install
+      - save_cache:
+          key: deps-{{ checksum "poetry.lock" }}
+          paths:
+            - .venv
+
 jobs:
   build-and-test:
     # executor: python/default
     executor: python
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
+      - poetry_install
       - run:
           name: Test poetry
           command: |
