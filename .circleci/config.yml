@@ -1,0 +1,26 @@
+version: 2.1
+orbs:
+  python: circleci/python@1.3.2
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: Test poetry
+          command: |
+            poetry run pytest --version
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t heroku-dockerize:circleci .
+            docker images
+workflows:
+  build-test-deploy:
+    jobs:
+      - build-and-test
+
