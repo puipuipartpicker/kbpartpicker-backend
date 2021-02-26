@@ -6,7 +6,7 @@ orbs:
 executors:
   python:
     docker:
-      - image: circleci/python:3.8-stretch-browsers
+      - image: circleci/python:3.8-buster
         environment:
           DB_DATABASE: kbpartpicker
           DB_HOST: "127.0.0.1"
