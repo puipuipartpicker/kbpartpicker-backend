@@ -1,4 +1,4 @@
-from app.models.types import ProductType
+from models.types import ProductType
 from .templates import Product, Vendor, Config
 from scrapers.kbd_fans import KBDFans
 

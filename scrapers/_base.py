@@ -7,8 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC 
 
-from app.models import Vendor
-from app.models.types import KeyboardFormFactor, ProductType, StabilizerSize, KeyboardLayout
+from models import Vendor
+from models.types import KeyboardFormFactor, ProductType, StabilizerSize, KeyboardLayout
 from utils.regex_dict import RegexDict
 from utils.catch_noelem_exception import CatchNoElem
 

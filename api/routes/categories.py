@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_cors import cross_origin, CORS
-from app.models import Product
-from app.models.types import ProductType
+from models import Product
+from models.types import ProductType
 from api.handlers import search
 
 categories = Blueprint('categories', __name__)

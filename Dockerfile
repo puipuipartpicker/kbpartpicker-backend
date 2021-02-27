@@ -62,5 +62,4 @@ RUN apt-get update && \
 WORKDIR $APP_HOME
 COPY --chown=kbpp:kbpp . .
 USER kbpp
-# RUN python scrape.py
-# ENTRYPOINT python run.py
+CMD python scrape.py & gunicorn run:app
