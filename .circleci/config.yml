@@ -69,7 +69,6 @@ jobs:
       - heroku/install
       - setup_remote_docker:
           version: 18.06.0-ce
-          # docker_layer_caching: true
       - run:
           name: Storing previous commit
           command: |
@@ -78,12 +77,6 @@ jobs:
           name: Build Docker Container
           command: |
             docker build --rm=false -t registry.heroku.com/<< parameters.app-name >>/<< parameters.app-type >> .
-      # - run:
-      #     name: Pushing to heroku registry
-      #     command: |
-      #       heroku container:login
-      #       heroku container:push web -a $HEROKU_APP_NAME
-      #       heroku container:release web -a $HEROKU_APP_NAME
       - run:
           name: Login into Heroku Docker Repository
           command: |
