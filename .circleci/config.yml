@@ -42,6 +42,19 @@ commands:
           paths:
             - .venv
 
+  install_google_chrome:
+    description: "Install google chrome driver and executable"
+    steps:
+      - run:
+          command: |
+            sudo wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+            sudo apt-get update && sudo apt-get -y install \
+                git openssh-server curl google-chrome-stable
+            sudo apt-get install -yqq unzip
+            sudo wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+            sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
 jobs:
   test:
     # executor: python/default
@@ -49,6 +62,7 @@ jobs:
     steps:
       - checkout
       - poetry_install
+      - install_google_chrome
       # - run:
       #     name: Setup DB
       #     command: |
