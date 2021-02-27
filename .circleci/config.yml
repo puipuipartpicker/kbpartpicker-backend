@@ -16,12 +16,12 @@ executors:
           DB_HOST: "127.0.0.1"
           DB_USERNAME: kbpp
           DB_PASSWORD: kbpp
-      - image: circleci/postgres:9.6.5-alpine-ram
+      - image: postgres:latest
         environment:
-          DB_DATABASE: kbpartpicker
-          DB_HOST: "127.0.0.1"
-          DB_USERNAME: kbpp
-          DB_PASSWORD: kbpp
+          POSTGRES_DB: kbpartpicker
+          POSTGRES_HOST: "127.0.0.1"
+          POSTGRES_USER: kbpp
+          POSTGRES_PASSWORD: kbpp
 
 commands:
   poetry_install:
@@ -49,6 +49,10 @@ jobs:
     steps:
       - checkout
       - poetry_install
+      # - run:
+      #     name: Setup DB
+      #     command: |
+      #       psql -U $DB_USERNAME -d $DB_DATABASE -h $DB_HOST -p 5432 -f config/kbpartpicker.sql
       - run:
           name: Test poetry
           command: |
