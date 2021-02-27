@@ -2,7 +2,7 @@ from attr import attrs, attrib
 from attr.validators import instance_of, optional
 
 from utils.list_of import list_of
-from app.models.types import ProductType
+from models.types import ProductType
 
 
 @attrs

@@ -21,10 +21,8 @@ def create_app():
     # CORS(app, support_credentials=True, resources={r"/*": {"origins": "*"}})
     CORS(app, resources={r"/*"}, origins=["*"], support_credentials=True)
     admin = Admin(app, name='kbpartpicker', template_mode='bootstrap3')
-    from .models import Product, Vendor, Country, VendorProductAssociation
-    print('initiating db')
+    from models import Product, Vendor, Country, VendorProductAssociation
     init_db()
-    print('db initiated')
     admin.add_view(ModelView(Product, session))
     admin.add_view(ModelView(Vendor, session))
     admin.add_view(ModelView(Country, session))

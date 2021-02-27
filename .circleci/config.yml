@@ -52,7 +52,7 @@ jobs:
       - run:
           name: Test poetry
           command: |
-            poetry run pytest --version
+            poetry run pytest
 
   build-and-deploy:
     executor: heroku/default

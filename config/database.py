@@ -4,7 +4,7 @@ from sqlalchemy import exc
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.engine.url import URL
-from app.models._base import BaseModel
+from models._base import BaseModel
 
 
 def _wait_db_connection(engine):
@@ -28,9 +28,7 @@ engine = create_engine(
         password=os.environ.get('DB_PASSWORD')
     )
 )
-print('connecting to db')
 _wait_db_connection(engine)
-print('connected to db')
 session = scoped_session(sessionmaker(bind=engine))
 session_maker = sessionmaker(bind=engine)
 

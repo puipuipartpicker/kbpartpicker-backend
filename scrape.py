@@ -1,9 +1,9 @@
 import os
 from datetime import date
 
-from app.models import Product, VendorProductAssociation
+from models import Product, VendorProductAssociation
 from vendors import nk_vendor, ck_vendor
-from config.database import session_maker
+from config.database import session_maker, init_db
 from config.driver import driver_maker
 
 
@@ -32,11 +32,9 @@ def main(session, driver):
 
 
 if __name__ == "__main__":
-    print('scraper')
     driver = driver_maker()
-    print('created driver')
     session = session_maker()
-    print('created session')
+    init_db()
     main(session, driver)
     driver.close()
     session.close()

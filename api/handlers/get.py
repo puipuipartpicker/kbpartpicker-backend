@@ -4,8 +4,8 @@ from flask import request, jsonify
 from flask_cors import cross_origin
 
 from api.exceptions import *
-from app.models import Product, VendorProductAssociation
-from app.models.types import ProductType
+from models import Product, VendorProductAssociation
+from models.types import ProductType
 
 
 logger = logging.getLogger('gunicorn.error')
