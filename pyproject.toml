@@ -5,7 +5,7 @@ description = ""
 authors = ["vimiomori <vivian.muchen@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.1"
 attr = "^0.3.1"
 attrs = "^20.3.0"
 Flask-Admin = "^1.5.7"
