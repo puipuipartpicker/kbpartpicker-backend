@@ -1,6 +1,6 @@
 import re
-from app.models.types import ProductType, KeyboardFormFactor, StabilizerSize
-from app.models import Product, Vendor, VendorProductAssociation
+from models.types import ProductType, KeyboardFormFactor, StabilizerSize
+from models import Product, Vendor, VendorProductAssociation
 
 
 class DatabaseAction():
@@ -22,4 +22,7 @@ class DatabaseAction():
         product.populate(**product_details)
         pv.populate(**pv_details)
         self.session.commit()
-        # print(product.name, pv.vendor.name, "insert" if p_is_new else "update")
+        print(
+            f"{'Inserted' if p_is_new else 'Updated'}"
+            f" {product.name} for {pv.vendor.name}."
+        )

@@ -3,6 +3,10 @@ orbs:
   # python: circleci/python@1.3.2
   heroku: circleci/heroku@1.0.1
 
+# machine:
+#   services:
+#     - docker
+
 executors:
   python:
     docker:
@@ -12,12 +16,12 @@ executors:
           DB_HOST: "127.0.0.1"
           DB_USERNAME: kbpp
           DB_PASSWORD: kbpp
-      - image: circleci/postgres:9.6.5-alpine-ram
+      - image: postgres:latest
         environment:
-          DB_DATABASE: kbpartpicker
-          DB_HOST: "127.0.0.1"
-          DB_USERNAME: kbpp
-          DB_PASSWORD: kbpp
+          POSTGRES_DB: kbpartpicker
+          POSTGRES_HOST: "127.0.0.1"
+          POSTGRES_USER: kbpp
+          POSTGRES_PASSWORD: kbpp
 
 commands:
   poetry_install:
@@ -38,50 +42,107 @@ commands:
           paths:
             - .venv
 
+  install_google_chrome:
+    description: "Install google chrome driver and executable"
+    steps:
+      - run:
+          command: |
+            sudo wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+            sudo apt-get update && sudo apt-get -y install \
+                git openssh-server curl google-chrome-stable
+            sudo apt-get install -yqq unzip
+            sudo wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+            sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
 jobs:
-  build-and-test:
+  test:
     # executor: python/default
     executor: python
     steps:
       - checkout
       - poetry_install
+      - install_google_chrome
+      # - run:
+      #     name: Setup DB
+      #     command: |
+      #       psql -U $DB_USERNAME -d $DB_DATABASE -h $DB_HOST -p 5432 -f config/kbpartpicker.sql
       - run:
           name: Test poetry
           command: |
-            poetry run pytest --version
-      - setup_remote_docker:
-          version: 18.06.0-ce
-      - run:
-          name: Build Docker image
-          command: |
-            docker build -t heroku-dockerize:circleci .
-            docker images
-  deploy:
+            poetry run pytest
+
+  build-and-deploy:
     executor: heroku/default
+    parameters:
+      app-name:
+        description: "The Heroku app name to which the application should be deployed"
+        type: string
+      app-type:
+        description: "The Heroku app type (web or worker) of the application to be deployed"
+        type: string
+        default: "web"
     steps:
       - checkout
-      - run:
-          name: Storing previous commit
-          command: |
-            git rev-parse HEAD > ./commit.txt
       - heroku/install
       - setup_remote_docker:
           version: 18.06.0-ce
       - run:
-          name: Pushing to heroku registry
+          name: Storing previous commit
+          command: |
+            git rev-parse HEAD > ./commit.txt
+      - run:
+          name: Build Docker Container
+          command: |
+            docker build --rm=false -t registry.heroku.com/<< parameters.app-name >>/<< parameters.app-type >> .
+      - run:
+          name: Login into Heroku Docker Repository
+          command: |
+            docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
+      - run:
+          name: Verify Container Login
           command: |
             heroku container:login
-            heroku container:push web --arg -a $HEROKU_APP_NAME
-            heroku container:release web -a $HEROKU_APP_NAME
+      - run:
+          name: Push Container To Heroku
+          command: |
+            heroku container:push web -a << parameters.app-name >>
+      - run:
+          name: Release Deployed Container
+          command: |
+            heroku container:release << parameters.app-type >> -a << parameters.app-name >>
 
 workflows:
-  build-test-deploy:
+  deploy-on-dev:
     jobs:
-      - build-and-test
-      - deploy:
-          requires:
-            - build-and-test
+      - test:
           filters:
             branches:
               only:
-                - master
+                - /feat(ure)?\/.+/
+                - /fix\/.+/
+      - build-and-deploy:
+          app-name: "${HEROKU_APP_NAME}-dev"
+          requires:
+            - test
+
+  deploy-on-stg:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: /release\/v\d+(\.\d+){2}$/ # SemVer style tag like release/v0.12.3
+      - build-and-deploy:
+          app-name: "${HEROKU_APP_NAME}-dev"
+          requires:
+            - test
+
+  deploy-on-prd:
+    jobs:
+      - build-and-deploy:
+          app-name: "${HEROKU_APP_NAME}-prd"
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+(\.\d+){2}$/ # SemVer style tag like v0.12.3

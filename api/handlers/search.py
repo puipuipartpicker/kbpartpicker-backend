@@ -2,8 +2,8 @@ import os
 from flask import request, jsonify
 
 from api.exceptions import *
-from app.models import Product, VendorProductAssociation
-from app.models.types import ProductType
+from models import Product, VendorProductAssociation
+from models.types import ProductType
 
 
 def search(product):

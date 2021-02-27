@@ -7,14 +7,14 @@ from selenium.common.exceptions import NoSuchElementException
 # from selenium.webdriver.support import expected_conditions as EC 
 
 from ._base import BaseScraper
-from app.models.types import (
+from models.types import (
     ProductType,
     KeyboardFormFactor,
     StabilizerSize,
     StabilizerType,
     SwitchType
 )
-# from app.models import Product, Vendor, VendorProductAssociation
+# from models import Product, Vendor, VendorProductAssociation
 # from utils.catch_noelem_exception import CatchNoElem
 # from utils.regex_dict import RegexDict
 
