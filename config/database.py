@@ -11,4 +11,8 @@ session_maker = sessionmaker(bind=engine)
 
 def init_db():
     BaseModel.query = session.query_property()
-    BaseModel.metadata.create_all(bind=engine, checkfirst=True)
+    try:
+        BaseModel.metadata.create_all(bind=engine, checkfirst=True)
+    except Exception as e:
+        # TODO catch sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation)
+        pass
