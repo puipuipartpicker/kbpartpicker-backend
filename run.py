@@ -19,4 +19,4 @@ app.register_blueprint(products, url_prefix='/products')
 
 if __name__ == "__main__":
     app.logger.info("Starting api")
-    app.run(debug=True, threaded=True, port=os.environ.get('PORT'))
+    app.run(debug=True, threaded=True)

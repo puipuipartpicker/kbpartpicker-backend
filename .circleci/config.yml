@@ -95,7 +95,7 @@ jobs:
       - run:
           name: Push Container To Heroku
           command: |
-            docker push registry.heroku.com/<< parameters.app-name >>/<< parameters.app-type >>
+            heroku container:push web -a << parameters.app-name >>
       - run:
           name: Release Deployed Container
           command: |
