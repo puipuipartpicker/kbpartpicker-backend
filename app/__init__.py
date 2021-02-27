@@ -1,4 +1,6 @@
 import os
+import logging
+import sys
 from flask import request, jsonify
 from flask_api import FlaskAPI
 from flask_cors import CORS
@@ -12,6 +14,7 @@ from config.database import init_db, session
 
 
 def create_app():
+    print('create flask app')
     app = FlaskAPI(__name__)
     # Configurations
     app.config.from_object('setup')
@@ -19,10 +22,27 @@ def create_app():
     CORS(app, resources={r"/*"}, origins=["*"], support_credentials=True)
     admin = Admin(app, name='kbpartpicker', template_mode='bootstrap3')
     from .models import Product, Vendor, Country, VendorProductAssociation
+    print('initiating db')
     init_db()
+    print('db initiated')
     admin.add_view(ModelView(Product, session))
     admin.add_view(ModelView(Vendor, session))
     admin.add_view(ModelView(Country, session))
+    # gunicorn_logger = logging.getLogger('gunicorn.error')
+    # app.logger.handlers = gunicorn_logger.handlers
+    # app.logger.setLevel(gunicorn_logger.level)
+
+    # Configure logging.
+    app.logger.setLevel(logging.DEBUG)
+    del app.logger.handlers[:]
+
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    handler.formatter = logging.Formatter(
+        fmt=u"%(asctime)s level=%(levelname)s %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%SZ",
+    )
+    app.logger.addHandler(handler)
     return app
 
 app = create_app()

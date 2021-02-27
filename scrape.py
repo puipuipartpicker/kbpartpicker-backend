@@ -32,8 +32,11 @@ def main(session, driver):
 
 
 if __name__ == "__main__":
+    print('scraper')
     driver = driver_maker()
+    print('created driver')
     session = session_maker()
+    print('created session')
     main(session, driver)
     driver.close()
     session.close()

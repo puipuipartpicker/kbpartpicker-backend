@@ -1,3 +1,5 @@
+import os
+import sys
 from app import app
 from api.routes import categories, products
 from api.exception_handlers import *
@@ -16,5 +18,5 @@ app.register_blueprint(products, url_prefix='/products')
 
 
 if __name__ == "__main__":
-    # app.run(debug=True)
-    app.run(debug=True, threaded=True, port=5000)
+    app.logger.info("Starting api")
+    app.run(debug=True, threaded=True, port=os.environ.get('PORT'))
