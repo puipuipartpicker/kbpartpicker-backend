@@ -133,7 +133,7 @@ workflows:
             branches:
               only: /release\/v\d+(\.\d+){2}$/ # SemVer style tag like release/v0.12.3
       - build-and-deploy:
-          app-name: "${HEROKU_APP_NAME}-dev"
+          app-name: "${HEROKU_APP_NAME}-stg"
           requires:
             - test
 
