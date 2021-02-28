@@ -112,6 +112,23 @@ jobs:
           command: |
             heroku container:release << parameters.app-type >> -a << parameters.app-name >>
 
+  merge:
+    executor: python
+    steps:
+      - checkout
+      - run:
+          name: merge master to develop
+          command: |
+            git config --global user.email $GIT_USER_EMAIL
+            git config --global user.name $GIT_USER_NAME
+            git checkout -B develop origin/develop
+            # Check to see if there is a conflict  # Expecting the message "error: unrecognized input" with git apply
+            if [ `git diff HEAD...origin/master | git apply -3 --check |& wc -m` == 26 ]; then
+              echo "Merge master to develop"
+              git merge -m "Merge branch 'master' into develop" origin/master
+              git push origin develop
+            fi
+
 workflows:
   deploy-on-dev:
     jobs:
@@ -146,3 +163,8 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v\d+(\.\d+){2}$/ # SemVer style tag like v0.12.3
+      - merge:
+          name: merge master to develop
+          filters:
+            branches:
+              only: master
