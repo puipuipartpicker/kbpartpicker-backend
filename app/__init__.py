@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from config.database import init_db, session
+from api.routes import categories, products
 
 
 # TODO Add authorization
@@ -18,8 +19,9 @@ def create_app():
     app = FlaskAPI(__name__)
     # Configurations
     app.config.from_object('setup')
-    # CORS(app, support_credentials=True, resources={r"/*": {"origins": "*"}})
     CORS(app, resources={r"/*"}, origins=["*"], support_credentials=True)
+    CORS(categories , resources={r"/*"}, origins=["*"], support_credentials=True)
+    CORS(products, resources={r"/*"}, origins=["*"], support_credentials=True)
     admin = Admin(app, name='kbpartpicker', template_mode='bootstrap3')
     from models import Product, Vendor, Country, VendorProductAssociation
     init_db()
