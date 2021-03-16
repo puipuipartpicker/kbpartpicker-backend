@@ -14,7 +14,7 @@ def get_product():
 
     response = {"status": ""}
     pv = VendorProductAssociation.query.filter(
-        VendorProductAssociation.url.ilike(f"%{pv_url}")
+        VendorProductAssociation.url.ilike(f"%{pv_url}%")
     ).first()
     if not pv:
         response["status"] = "Not Found"
