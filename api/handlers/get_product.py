@@ -1,11 +1,17 @@
 import re
+import logging
 from flask import request, jsonify
 from vendors import nk_vendor, ck_vendor
 from models import Product
 
+logger = logging.getLogger('gunicorn.error')
+
 def get_product():
     vendor_url = request.data.get("vendor_url")
     product_name = request.data.get("product_name")
+
+    logger.info(vendor_url)
+    logger.info(product_name)
 
     all_vendors = [nk_vendor, ck_vendor]
     vendor = [v for v in all_vendors if v.config.url in vendor_url][0]
