@@ -10,6 +10,7 @@ def get_product():
     vendor_url = request.data.get("vendor_url")
     product_url = request.data.get("product_url")
     pv_url = _merge_url(vendor_url, product_url)
+    logger.info(pv_url)
 
     response = {"status": ""}
     pv = VendorProductAssociation.query.filter(
